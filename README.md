@@ -1,7 +1,8 @@
 # S2.01_AHAMED_BENHAFESSA_CHETIOUI
 
-## Architecture du projet
+## 1/ Structure du projet
 
+```
 Projet/
 |-- README.md
 |   |-- documentation/
@@ -30,3 +31,4 @@ Projet/
                         |-- theme2
                         |-- ...
                         |-- default
+```
