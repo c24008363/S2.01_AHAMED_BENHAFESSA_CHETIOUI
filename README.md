@@ -2,7 +2,7 @@
 
 ## Architecture du projet
 
-$Projet/
+Projet/
 |-- README.md
 |   |-- documentation/
 |       |-- index
@@ -29,4 +29,4 @@ $Projet/
                         |-- theme1
                         |-- theme2
                         |-- ...
-                        |-- default$
+                        |-- default
