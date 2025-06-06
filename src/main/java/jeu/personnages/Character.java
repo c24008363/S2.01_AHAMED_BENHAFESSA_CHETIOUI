@@ -86,15 +86,6 @@ public abstract class Character {
         }
     }
 
-    protected boolean canMoveTo(int newRow, int newCol) {
-        // Check bounds
-        if (newRow < 0 || newRow >= gameMatrix.length || newCol < 0 || newCol >= gameMatrix[0].length)
-            return false;
-
-
-        // Only allow movement onto empty tiles (value 0)
-        return gameMatrix[newRow][newCol] == 0;
-    }
 
     protected boolean canMoveToRework(int x, int y, int TileSize) {
         if (x / TileSize <= 0 || y / TileSize <= 0 || x / TileSize >= gameMatrix.length || y / TileSize >= gameMatrix[0].length)

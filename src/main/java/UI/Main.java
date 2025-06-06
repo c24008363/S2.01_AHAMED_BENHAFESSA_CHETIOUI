@@ -23,7 +23,7 @@ public class Main extends Application {
 
 
     private static int BoardSize = 15;
-    private static int TileSize = 75;
+    private static int TileSize = 40;
     private int[][] gameMatrix = new int[BoardSize][BoardSize];
 
     private ImageView[][] tileView = new ImageView[BoardSize][BoardSize];
@@ -39,6 +39,8 @@ public class Main extends Application {
     private Player player2;
     private ImageView player1View;
     private ImageView player2View;
+
+    private int playerSpeed = 0; //The higher the slower
 
     private boolean player1BombPressed = false;
     private boolean player2BombPressed = false;
@@ -104,7 +106,6 @@ public class Main extends Application {
 
         root.getChildren().addAll(player1View, player2View);
 
-        updatePlayerViews();
 
         Scene scene = new Scene(root);
         scene.setOnKeyPressed(e -> activeKeys.add(e.getCode()));
@@ -114,17 +115,23 @@ public class Main extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (activeKeys.contains(KeyCode.Z)) player1.moveUp(TileSize);
-                if (activeKeys.contains(KeyCode.S)) player1.moveDown(TileSize);
-                if (activeKeys.contains(KeyCode.Q)) player1.moveLeft(TileSize);
-                if (activeKeys.contains(KeyCode.D)) player1.moveRight(TileSize);
-                if (activeKeys.contains(KeyCode.E)) {
-                    if (!player1BombPressed && player1.getBombCount() > 0) {
-                        bombs.add(player1.placeBomb(TileSize));
-                        player1BombPressed = true;
+                if (playerSpeed == 0) {
+                    if (activeKeys.contains(KeyCode.Z)) player1.moveUp(TileSize);
+                    if (activeKeys.contains(KeyCode.S)) player1.moveDown(TileSize);
+                    if (activeKeys.contains(KeyCode.Q)) player1.moveLeft(TileSize);
+                    if (activeKeys.contains(KeyCode.D)) player1.moveRight(TileSize);
+                    if (activeKeys.contains(KeyCode.E)) {
+                        if (!player1BombPressed && player1.getBombCount() > 0) {
+                            bombs.add(player1.placeBomb(TileSize));
+                            player1BombPressed = true;
+                        }
+                    } else {
+                        player1BombPressed = false;
                     }
-                } else {
-                    player1BombPressed = false;
+                    playerSpeed = 1;
+                }
+                else{
+                    playerSpeed -= 1 ;
                 }
 
 
