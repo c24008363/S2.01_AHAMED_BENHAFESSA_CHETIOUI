@@ -6,13 +6,13 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import jeu.objets.Bomb;
 import jeu.personnages.Player;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class Main extends Application {
 
@@ -32,13 +32,19 @@ public class Main extends Application {
     private ImageView player1View;
     private ImageView player2View;
 
+    private List<Bomb> bombs = new ArrayList<>();
+
+    public void setBombs(List<Bomb> bombs) {
+        this.bombs = bombs;
+    }
+
     @Override
     public void start(Stage primaryStage) {
         // Load images
         emptyImage = new Image(getClass().getResourceAsStream("/UI/000-floor.png"), TileSize, TileSize, false, true);
         IndestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/001-durable_wall.png"), TileSize, TileSize, false, true);
         DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/002-destructible_wall.png"), TileSize, TileSize, false, true);
-        player1Image = new Image(getClass().getResourceAsStream("/UI/alexadnre.jpg"), TileSize, TileSize, false, true);
+        player1Image = new Image(getClass().getResourceAsStream("/UI/hagried.jpg"), TileSize, TileSize, false, true);
         player2Image = new Image(getClass().getResourceAsStream("/UI/william.jpg"), TileSize, TileSize, false, true);
 
         Pane root = new Pane();
@@ -69,8 +75,8 @@ public class Main extends Application {
         }
 
         // Setup players
-        player1 = new Player(1, 1, gameMatrix, 1);
-        player2 = new Player(BoardSize - 2, BoardSize - 2, gameMatrix, 2);
+        player1 = new Player(1, 1, gameMatrix, 1, player1Image);
+        player2 = new Player(BoardSize - 2, BoardSize - 2, gameMatrix, 2, player2Image);
 
         player1View = new ImageView(player1Image);
         player2View = new ImageView(player2Image);
@@ -95,13 +101,28 @@ public class Main extends Application {
                 if (activeKeys.contains(KeyCode.S)) player1.moveDown();
                 if (activeKeys.contains(KeyCode.Q)) player1.moveLeft();
                 if (activeKeys.contains(KeyCode.D)) player1.moveRight();
+                if (activeKeys.contains(KeyCode.E) && player1.getBombCount()>0) {
+                    bombs.add(player1.placeBomb(TileSize));
+                }
+                System.out.println("aaaaaa  " + player1.getBombCount());
 
                 if (activeKeys.contains(KeyCode.I)) player2.moveUp();
                 if (activeKeys.contains(KeyCode.K)) player2.moveDown();
                 if (activeKeys.contains(KeyCode.J)) player2.moveLeft();
                 if (activeKeys.contains(KeyCode.L)) player2.moveRight();
+                if (activeKeys.contains(KeyCode.O)) bombs.add(player2.placeBomb(TileSize));
 
                 updatePlayerViews();
+
+                for (Bomb bomb : bombs) {
+                    if (bomb.countDown()) {
+                        root.getChildren().remove(bomb.getImageView());
+                    }
+                }
+                bombs.removeIf(bomb -> bomb.countDown());
+
+                updateBombView(root);
+
             }
         };
         timer.start();
@@ -109,7 +130,7 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.sizeToScene();
         primaryStage.setResizable(false);
-        primaryStage.setTitle("15x15 Matrix with Players");
+        primaryStage.setTitle("Bomberman super (javafx remake)");
         primaryStage.show();
     }
 
@@ -118,6 +139,19 @@ public class Main extends Application {
         player1View.setLayoutY(player1.getRow() * TileSize);
         player2View.setLayoutX(player2.getCol() * TileSize);
         player2View.setLayoutY(player2.getRow() * TileSize);
+    }
+
+    private void updateBombView(Pane root) {
+        for (Bomb bomb: bombs){
+            if (bomb.getImageView() == null){
+                bomb.setImageView(new ImageView(new Image(getClass().getResourceAsStream("/UI/005-bombFace.png"), TileSize, TileSize, false, true)));
+                bomb.getImageView().setFitWidth(TileSize);
+                bomb.getImageView().setFitHeight(TileSize);
+                bomb.getImageView().setLayoutX(bomb.getY() * TileSize);
+                bomb.getImageView().setLayoutY(bomb.getX() * TileSize);
+                root.getChildren().add(bomb.getImageView());
+            }
+        }
     }
 
     private Image getImageForValue(int val) {

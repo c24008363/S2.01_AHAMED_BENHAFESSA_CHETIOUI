@@ -1,9 +1,10 @@
 package jeu.personnages;
 
+import javafx.scene.image.Image;
+
 public class Player extends Character {
 
-    public Player(int startRow, int startCol, int[][] gameMatrix, int id) {
-        super(startRow, startCol, gameMatrix, id);
+    public Player(int startRow, int startCol, int[][] gameMatrix, int id, Image image) { super(startRow, startCol, gameMatrix, id, image);
     }
 
     @Override

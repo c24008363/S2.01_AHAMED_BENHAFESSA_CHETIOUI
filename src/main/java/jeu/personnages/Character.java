@@ -1,16 +1,25 @@
 package jeu.personnages;
 
+import javafx.scene.image.Image;
+import jeu.objets.Bomb;
+
+import java.util.Arrays;
+import java.util.List;
+
 public abstract class Character {
     protected int row;
     protected int col;
     protected int[][] gameMatrix;
     protected int id;
+    protected Image image;
+    private int bombCount = 1;
 
-    public Character(int startRow, int startCol, int[][] gameMatrix, int id) {
+    public Character(int startRow, int startCol, int[][] gameMatrix, int id, Image image) {
         this.row = startRow;
         this.col = startCol;
         this.gameMatrix = gameMatrix;
         this.id = id;
+        this.image = image;
     }
 
     public int getRow() {
@@ -52,6 +61,20 @@ public abstract class Character {
 
         // Only allow movement onto empty tiles (value 0)
         return gameMatrix[newRow][newCol] == 0;
+    }
+
+    public Bomb placeBomb(int TileSize){
+        return new Bomb(this.row, this.col, new Image(getClass().getResourceAsStream("/UI/005-bombFace.png"),
+                        TileSize, TileSize, false, true), this, 1);
+
+    }
+
+    public int getBombCount() {
+        return bombCount;
+    }
+
+    public void setBombCount(int bombCount) {
+        this.bombCount = bombCount;
     }
 
     public abstract void update(); // let subclasses define their behavior per frame
