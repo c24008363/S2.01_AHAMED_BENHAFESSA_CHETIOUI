@@ -12,7 +12,7 @@ public abstract class Character {
     protected int[][] gameMatrix;
     protected int id;
     protected Image image;
-    private int bombCount = 1;
+    private int bombCount = 10;
 
     public Character(int startRow, int startCol, int[][] gameMatrix, int id, Image image) {
         this.row = startRow;
@@ -64,6 +64,7 @@ public abstract class Character {
     }
 
     public Bomb placeBomb(int TileSize){
+        bombCount = bombCount -1;
         return new Bomb(this.row, this.col, new Image(getClass().getResourceAsStream("/UI/005-bombFace.png"),
                         TileSize, TileSize, false, true), this, 1);
 
