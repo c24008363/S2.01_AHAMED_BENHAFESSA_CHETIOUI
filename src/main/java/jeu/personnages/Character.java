@@ -3,23 +3,24 @@ package jeu.personnages;
 import javafx.scene.image.Image;
 import jeu.objets.Bomb;
 
-import java.util.Arrays;
-import java.util.List;
-
 public abstract class Character {
     protected int row;
     protected int col;
+    private int x;
+    private int y;
     protected int[][] gameMatrix;
     protected int id;
     protected Image image;
-    private int bombCount = 10;
+    private int bombCount = 1;
 
-    public Character(int startRow, int startCol, int[][] gameMatrix, int id, Image image) {
+    public Character(int startRow, int startCol, int[][] gameMatrix, int id, Image image, int tileSize) {
         this.row = startRow;
         this.col = startCol;
         this.gameMatrix = gameMatrix;
         this.id = id;
         this.image = image;
+        this.x = startRow*tileSize;
+        this.y = startCol*tileSize;
     }
 
     public int getRow() {
@@ -30,27 +31,58 @@ public abstract class Character {
         return col;
     }
 
-    public void moveUp() {
-        if (canMoveTo(row - 1, col)) {
-            row--;
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public void moveUp(int tileSize) {
+        if (canMoveToRework(y-2, x, tileSize )) {
+            setY(getY() - 1);
+            row = (getY())/tileSize;
+            System.out.print("y="+y);
+            System.out.println("row="+row);
         }
     }
 
-    public void moveDown() {
-        if (canMoveTo(row + 1, col)) {
-            row++;
+    public void moveDown(int tileSize) {
+        if (canMoveToRework(y+2, x, tileSize )) {
+            setY(getY() + 1);
+            row = (getY()+(tileSize-5)/2)/tileSize;
+            System.out.print("y="+y);
+            System.out.println("row="+row);
+        }
+
+    }
+
+    public void moveLeft(int tileSize) {
+        if (canMoveToRework(y, (x-2), tileSize )) {
+            setX(getX() - 1);
+            col = (getX())/tileSize;
+            System.out.print("x="+x);
+            System.out.println("col="+col);
+
         }
     }
 
-    public void moveLeft() {
-        if (canMoveTo(row, col - 1)) {
-            col--;
-        }
-    }
+    public void moveRight(int tileSize) {
+        if (canMoveToRework(y, (x+2), tileSize )){
+            setX(getX() + 1);
+            col = (getX()+(tileSize-5)/2)/tileSize;
+            System.out.print("x="+x);
+            System.out.println("col="+col);
 
-    public void moveRight() {
-        if (canMoveTo(row, col + 1)) {
-            col++;
         }
     }
 
@@ -59,8 +91,23 @@ public abstract class Character {
         if (newRow < 0 || newRow >= gameMatrix.length || newCol < 0 || newCol >= gameMatrix[0].length)
             return false;
 
+
         // Only allow movement onto empty tiles (value 0)
         return gameMatrix[newRow][newCol] == 0;
+    }
+
+    protected boolean canMoveToRework(int x, int y, int TileSize) {
+        if (x / TileSize <= 0 || y / TileSize <= 0 || x / TileSize >= gameMatrix.length || y / TileSize >= gameMatrix[0].length)
+            return false;
+
+        return gameMatrix[(x) / TileSize][(y) / TileSize] == 0 //haut gauche
+                &&
+                gameMatrix[(x+(TileSize-5)) / TileSize][(y+(TileSize-5)) / TileSize] == 0 //bas droite
+                &&
+                gameMatrix[((x)+TileSize-5) / TileSize][(y) / TileSize] == 0 //haut droite
+                &&
+                gameMatrix[(x) / TileSize][(y+TileSize-5) / TileSize] == 0; //bas gauche
+
     }
 
     public Bomb placeBomb(int TileSize){

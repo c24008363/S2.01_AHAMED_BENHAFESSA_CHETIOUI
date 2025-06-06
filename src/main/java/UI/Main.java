@@ -23,7 +23,7 @@ public class Main extends Application {
 
 
     private static int BoardSize = 15;
-    private static int TileSize = 40;
+    private static int TileSize = 75;
     private int[][] gameMatrix = new int[BoardSize][BoardSize];
 
     private ImageView[][] tileView = new ImageView[BoardSize][BoardSize];
@@ -91,16 +91,16 @@ public class Main extends Application {
         }
 
         // Setup players
-        player1 = new Player(1, 1, gameMatrix, 1, player1Image);
-        player2 = new Player(BoardSize - 2, BoardSize - 2, gameMatrix, 2, player2Image);
+        player1 = new Player(1, 1, gameMatrix, 1, player1Image, TileSize);
+        player2 = new Player(BoardSize - 2, BoardSize - 2, gameMatrix, 2, player2Image, TileSize);
 
         player1View = new ImageView(player1Image);
         player2View = new ImageView(player2Image);
 
-        player1View.setFitWidth(TileSize);
-        player1View.setFitHeight(TileSize);
-        player2View.setFitWidth(TileSize);
-        player2View.setFitHeight(TileSize);
+        player1View.setFitWidth(TileSize-5);
+        player1View.setFitHeight(TileSize-5);
+        player2View.setFitWidth(TileSize-5);
+        player2View.setFitHeight(TileSize-5);
 
         root.getChildren().addAll(player1View, player2View);
 
@@ -114,10 +114,10 @@ public class Main extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (activeKeys.contains(KeyCode.Z)) player1.moveUp();
-                if (activeKeys.contains(KeyCode.S)) player1.moveDown();
-                if (activeKeys.contains(KeyCode.Q)) player1.moveLeft();
-                if (activeKeys.contains(KeyCode.D)) player1.moveRight();
+                if (activeKeys.contains(KeyCode.Z)) player1.moveUp(TileSize);
+                if (activeKeys.contains(KeyCode.S)) player1.moveDown(TileSize);
+                if (activeKeys.contains(KeyCode.Q)) player1.moveLeft(TileSize);
+                if (activeKeys.contains(KeyCode.D)) player1.moveRight(TileSize);
                 if (activeKeys.contains(KeyCode.E)) {
                     if (!player1BombPressed && player1.getBombCount() > 0) {
                         bombs.add(player1.placeBomb(TileSize));
@@ -128,10 +128,10 @@ public class Main extends Application {
                 }
 
 
-                if (activeKeys.contains(KeyCode.I)) player2.moveUp();
-                if (activeKeys.contains(KeyCode.K)) player2.moveDown();
-                if (activeKeys.contains(KeyCode.J)) player2.moveLeft();
-                if (activeKeys.contains(KeyCode.L)) player2.moveRight();
+                if (activeKeys.contains(KeyCode.I)) player2.moveUp(TileSize);
+                if (activeKeys.contains(KeyCode.K)) player2.moveDown(TileSize);
+                if (activeKeys.contains(KeyCode.J)) player2.moveLeft(TileSize);
+                if (activeKeys.contains(KeyCode.L)) player2.moveRight(TileSize);
                 if (activeKeys.contains(KeyCode.O)) {
                     if (!player2BombPressed && player2.getBombCount() > 0) {
                         bombs.add(player2.placeBomb(TileSize));
@@ -141,7 +141,7 @@ public class Main extends Application {
                     player2BombPressed = false;
                 }
 
-                updatePlayerViews();
+                updatePlayerViewsSmooth();
 
                 List<Bomb> explodedBombs = new ArrayList<>();
                 for (Bomb bomb : bombs) {
@@ -241,6 +241,13 @@ public class Main extends Application {
         player1View.setLayoutY(player1.getRow() * TileSize);
         player2View.setLayoutX(player2.getCol() * TileSize);
         player2View.setLayoutY(player2.getRow() * TileSize);
+    }
+
+    private void updatePlayerViewsSmooth() {
+        player1View.setLayoutX(player1.getX());
+        player1View.setLayoutY(player1.getY());
+        player2View.setLayoutX(player2.getX());
+        player2View.setLayoutY(player2.getY());
     }
 
     private void updateBombView(Pane root) {
