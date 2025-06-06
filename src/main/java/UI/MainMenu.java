@@ -1,0 +1,47 @@
+package UI;
+
+import UI.controller.MenuController;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+
+public class MainMenu extends Application {
+    private Stage primaryStage;
+    private Scene menuScene;
+    private Scene gameScene;
+
+    private Game main = new Game();
+    @Override
+    public void start(Stage primaryStage) throws IOException {
+        this.primaryStage = primaryStage;
+        primaryStage.setWidth(main.getBoardSize() * main.getTileSize() + (main.getTileSize()/2)-5);
+        primaryStage.setHeight(main.getBoardSize() * main.getTileSize() + main.getTileSize()-1);
+
+        // Charger le menu depuis FXML
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/UI/menu/menu.fxml"));
+        Parent menuRoot = fxmlLoader.load();
+        menuScene = new Scene(menuRoot);
+
+        // Passer une référence à Main dans le controller du menu
+        MenuController controller = fxmlLoader.getController();
+        controller.setMainMenu(this);
+
+        primaryStage.setTitle("Bomberman Menu");
+        primaryStage.setScene(menuScene);
+        primaryStage.show();
+    }
+
+    public void launchGame(){
+        menuScene.setRoot(main.getRoot());
+//        primaryStage.setScene(gameScene);
+        main.attachKeyHandlers(menuScene);
+    }
+
+    public void returnToMenu(){
+        primaryStage.setScene(menuScene);
+    }
+}

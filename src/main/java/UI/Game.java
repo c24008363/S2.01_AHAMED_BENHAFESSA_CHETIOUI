@@ -1,28 +1,21 @@
 package UI;
 
 import javafx.animation.AnimationTimer;
-import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import jeu.objets.Bomb;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-import jeu.objets.Bomb;
 import jeu.objets.Explosion;
 import jeu.objets.TimedExplosion;
 import jeu.personnages.Player;
 
 import java.util.*;
-import java.time.Duration;
-import java.time.Instant;
 
-public class Main extends Application {
-
-
-
-    private static int BoardSize = 15;
+public class Game {
+    private static int BoardSize = 20;
     private static int TileSize = 40;
     private int[][] gameMatrix = new int[BoardSize][BoardSize];
 
@@ -55,8 +48,16 @@ public class Main extends Application {
         this.bombs = bombs;
     }
 
-    @Override
-    public void start(Stage primaryStage) {
+    private Pane root = new Pane();
+
+    public Game() {
+        initGame();
+    }
+
+    public int getBoardSize() {return BoardSize;}
+    public int getTileSize() {return TileSize;}
+
+    private void initGame() {
         // Load images
         emptyImage = new Image(getClass().getResourceAsStream("/UI/000-floor.png"), TileSize, TileSize, false, true);
         IndestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/001-durable_wall.png"), TileSize, TileSize, false, true);
@@ -64,7 +65,7 @@ public class Main extends Application {
         player1Image = new Image(getClass().getResourceAsStream("/UI/hagried.jpg"), TileSize, TileSize, false, true);
         player2Image = new Image(getClass().getResourceAsStream("/UI/william.jpg"), TileSize, TileSize, false, true);
 
-        Pane root = new Pane();
+
         Random random = new Random();
 
         for (int row = 0; row < BoardSize; row++) {
@@ -106,98 +107,89 @@ public class Main extends Application {
 
         root.getChildren().addAll(player1View, player2View);
 
-
-        Scene scene = new Scene(root);
-        scene.setOnKeyPressed(e -> activeKeys.add(e.getCode()));
-        scene.setOnKeyReleased(e -> activeKeys.remove(e.getCode()));
-
-
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (playerSpeed == 0) {
-                    if (activeKeys.contains(KeyCode.Z)) player1.moveUp(TileSize);
-                    if (activeKeys.contains(KeyCode.S)) player1.moveDown(TileSize);
-                    if (activeKeys.contains(KeyCode.Q)) player1.moveLeft(TileSize);
-                    if (activeKeys.contains(KeyCode.D)) player1.moveRight(TileSize);
-                    if (activeKeys.contains(KeyCode.E)) {
-                        if (!player1BombPressed && player1.getBombCount() > 0) {
-                            bombs.add(player1.placeBomb(TileSize));
-                            player1BombPressed = true;
-                        }
-                    } else {
-                        player1BombPressed = false;
-                    }
-                    playerSpeed = 1;
-                }
-                else{
-                    playerSpeed -= 1 ;
-                }
-
-
-                if (activeKeys.contains(KeyCode.I)) player2.moveUp(TileSize);
-                if (activeKeys.contains(KeyCode.K)) player2.moveDown(TileSize);
-                if (activeKeys.contains(KeyCode.J)) player2.moveLeft(TileSize);
-                if (activeKeys.contains(KeyCode.L)) player2.moveRight(TileSize);
-                if (activeKeys.contains(KeyCode.O)) {
-                    if (!player2BombPressed && player2.getBombCount() > 0) {
-                        bombs.add(player2.placeBomb(TileSize));
-                        player2BombPressed = true;
+            if (playerSpeed == 0) {
+                if (activeKeys.contains(KeyCode.Z)) player1.moveUp(TileSize);
+                if (activeKeys.contains(KeyCode.S)) player1.moveDown(TileSize);
+                if (activeKeys.contains(KeyCode.Q)) player1.moveLeft(TileSize);
+                if (activeKeys.contains(KeyCode.D)) player1.moveRight(TileSize);
+                if (activeKeys.contains(KeyCode.E)) {
+                    if (!player1BombPressed && player1.getBombCount() > 0) {
+                        bombs.add(player1.placeBomb(TileSize));
+                        player1BombPressed = true;
                     }
                 } else {
-                    player2BombPressed = false;
+                    player1BombPressed = false;
                 }
+                playerSpeed = 1;
+            }
+            else{
+                playerSpeed -= 1 ;
+            }
 
-                updatePlayerViewsSmooth();
 
-                List<Bomb> explodedBombs = new ArrayList<>();
-                for (Bomb bomb : bombs) {
-                    if (bomb.countDown()) {
-                        root.getChildren().remove(bomb.getImageView());
-                        explodedBombs.add(bomb);
+            if (activeKeys.contains(KeyCode.I)) player2.moveUp(TileSize);
+            if (activeKeys.contains(KeyCode.K)) player2.moveDown(TileSize);
+            if (activeKeys.contains(KeyCode.J)) player2.moveLeft(TileSize);
+            if (activeKeys.contains(KeyCode.L)) player2.moveRight(TileSize);
+            if (activeKeys.contains(KeyCode.O)) {
+                if (!player2BombPressed && player2.getBombCount() > 0) {
+                    bombs.add(player2.placeBomb(TileSize));
+                    player2BombPressed = true;
+                }
+            } else {
+                player2BombPressed = false;
+            }
 
-                        List<Explosion> newExplosions = generateExplosionsFromBomb(bomb);
+            updatePlayerViewsSmooth();
 
-                        for (Explosion exp : newExplosions) {
-                            ImageView explosionView = new ImageView(new Image(getClass().getResourceAsStream("/UI/flame.png"), TileSize, TileSize, false, true));
-                            explosionView.setLayoutX(exp.getY() * TileSize);
-                            explosionView.setLayoutY(exp.getX() * TileSize);
-                            explosionView.setFitWidth(TileSize);
-                            explosionView.setFitHeight(TileSize);
-                            root.getChildren().add(explosionView);
+            List<Bomb> explodedBombs = new ArrayList<>();
+            for (Bomb bomb : bombs) {
+                if (bomb.countDown()) {
+                    root.getChildren().remove(bomb.getImageView());
+                    explodedBombs.add(bomb);
 
-                            timedExplosions.add(new TimedExplosion(exp, explosionView, now));
-                        }
+                    List<Explosion> newExplosions = generateExplosionsFromBomb(bomb);
+
+                    for (Explosion exp : newExplosions) {
+                        ImageView explosionView = new ImageView(new Image(getClass().getResourceAsStream("/UI/flame.png"), TileSize, TileSize, false, true));
+                        explosionView.setLayoutX(exp.getY() * TileSize);
+                        explosionView.setLayoutY(exp.getX() * TileSize);
+                        explosionView.setFitWidth(TileSize);
+                        explosionView.setFitHeight(TileSize);
+                        root.getChildren().add(explosionView);
+
+                        timedExplosions.add(new TimedExplosion(exp, explosionView, now));
                     }
                 }
+            }
 
-                List<TimedExplosion> expiredExplosions = new ArrayList<>();
-                for (TimedExplosion te : timedExplosions) {
-                    if ((now - te.getCreatedTimeNano()) >= 500_000_000L) { // 0.5 seconds in nanoseconds
-                        root.getChildren().remove(te.getImageView());
-                        expiredExplosions.add(te);
-                    }
+            List<TimedExplosion> expiredExplosions = new ArrayList<>();
+            for (TimedExplosion te : timedExplosions) {
+                if ((now - te.getCreatedTimeNano()) >= 500_000_000L) { // 0.5 seconds in nanoseconds
+                    root.getChildren().remove(te.getImageView());
+                    expiredExplosions.add(te);
                 }
-                timedExplosions.removeAll(expiredExplosions);
+            }
+            timedExplosions.removeAll(expiredExplosions);
 
 
-                //fonction()
-                bombs.removeAll(explodedBombs);
+            //fonction()
+            bombs.removeAll(explodedBombs);
 
 
-                updateBombView(root);
-
+            updateBombView(root);
             }
         };
         timer.start();
-
-        primaryStage.setScene(scene);
-        primaryStage.sizeToScene();
-        primaryStage.setResizable(false);
-        primaryStage.setTitle("Bomberman super (javafx remake)");
-        primaryStage.show();
     }
 
+    public void attachKeyHandlers(Scene scene){
+        scene.setOnKeyPressed(e -> activeKeys.add(e.getCode()));
+        scene.setOnKeyReleased(e -> activeKeys.remove(e.getCode()));
+    }
 
     private List<Explosion> generateExplosionsFromBomb(Bomb bomb) {
         List<Explosion> explosionList = new ArrayList<>();
@@ -243,12 +235,12 @@ public class Main extends Application {
     }
 
 
-    private void updatePlayerViews() {
-        player1View.setLayoutX(player1.getCol() * TileSize);
-        player1View.setLayoutY(player1.getRow() * TileSize);
-        player2View.setLayoutX(player2.getCol() * TileSize);
-        player2View.setLayoutY(player2.getRow() * TileSize);
-    }
+//    private void updatePlayerViews() {
+//        player1View.setLayoutX(player1.getCol() * TileSize);
+//        player1View.setLayoutY(player1.getRow() * TileSize);
+//        player2View.setLayoutX(player2.getCol() * TileSize);
+//        player2View.setLayoutY(player2.getRow() * TileSize);
+//    }
 
     private void updatePlayerViewsSmooth() {
         player1View.setLayoutX(player1.getX());
@@ -278,7 +270,8 @@ public class Main extends Application {
         };
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    public Pane getRoot(){
+        return root;
     }
+
 }
