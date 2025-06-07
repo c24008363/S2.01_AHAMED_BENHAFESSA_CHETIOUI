@@ -1,5 +1,7 @@
 package jeu.personnages;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
 import jeu.objets.Bomb;
 
@@ -10,7 +12,7 @@ public abstract class Character {
     private int y;
     protected int[][] gameMatrix;
     protected int id;
-    protected Image image;
+    private ObjectProperty<Image> imageProperty = new SimpleObjectProperty<>();
     private int bombCount = 1;
 
     public Character(int startRow, int startCol, int[][] gameMatrix, int id, Image image, int tileSize) {
@@ -18,7 +20,7 @@ public abstract class Character {
         this.col = startCol;
         this.gameMatrix = gameMatrix;
         this.id = id;
-        this.image = image;
+        this.imageProperty.set(image);
         this.x = startRow*tileSize;
         this.y = startCol*tileSize;
     }
@@ -47,10 +49,13 @@ public abstract class Character {
         this.y = y;
     }
 
+    public Image getImage() {return imageProperty.get();}
+    public void setImage(Image image) { this.imageProperty.set(image);}
+
     public void moveUp(int tileSize) {
         if (canMoveToRework(y-2, x, tileSize )) {
             setY(getY() - 1);
-            row = (getY())/tileSize;
+            row = (getY()+(tileSize-5)/2)/tileSize;
             System.out.print("y="+y);
             System.out.println("row="+row);
         }
@@ -69,7 +74,7 @@ public abstract class Character {
     public void moveLeft(int tileSize) {
         if (canMoveToRework(y, (x-2), tileSize )) {
             setX(getX() - 1);
-            col = (getX())/tileSize;
+            col = (getX()+(tileSize-5)/2)/tileSize;
             System.out.print("x="+x);
             System.out.println("col="+col);
 

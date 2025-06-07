@@ -2,6 +2,10 @@ package UI.controller;
 
 import UI.MainMenu;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 public class MenuController {
     private MainMenu mainMenu;
@@ -14,5 +18,21 @@ public class MenuController {
     private void handlePlayButton(){
         mainMenu.launchGame();
     }
+    @FXML
+    private void handleQuitButton() { System.exit(0); }
 
+    public void handleOptionsClick() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/UI/menu/OptionWindow.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Options");
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -12,7 +12,7 @@
             prefHeight="400.0" prefWidth="600.0">
     <VBox>
         <Button text="Jouer" onAction="#handlePlayButton"/>
-        <Button text="Option"/>
-        <Button text="Quitter"/>
+        <Button text="Option" onAction="#handleOptionsClick"/>
+        <Button text="Quitter" onAction="#handleQuitButton"/>
     </VBox>
 </StackPane>

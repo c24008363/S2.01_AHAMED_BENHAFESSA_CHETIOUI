@@ -54,6 +54,18 @@ public class Game {
         initGame();
     }
 
+    public Game(int BoardsSize, int TileSize){
+        if (BoardsSize%2==0) {
+            this.BoardSize = BoardsSize + 1;
+            this.TileSize = TileSize;
+        }
+        else {
+            this.BoardSize = BoardsSize;
+            this.TileSize = TileSize;
+        }
+        initGame();
+    }
+
     public int getBoardSize() {return BoardSize;}
     public int getTileSize() {return TileSize;}
 
