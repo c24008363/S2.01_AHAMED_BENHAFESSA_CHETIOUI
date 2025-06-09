@@ -14,3 +14,4 @@ public class PlayerTest extends Character2{
     @Override public KeyCode getKeyLeft() {return KeyCode.Q;}
     @Override public KeyCode getKeyBomb() {return KeyCode.E;}
 }
+
