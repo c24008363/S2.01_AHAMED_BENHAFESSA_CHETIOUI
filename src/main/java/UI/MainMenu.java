@@ -63,13 +63,13 @@ public class MainMenu extends Application {
         primaryStage.show();
     }
 
+    // Lancement du jeu
     public void launchGame(){
         main = new Game(boardSize, tileSize);
         System.out.print(boardSize + "   ");
         System.out.println(tileSize);
         menuScene.setRoot(main.getRoot());
         primaryStage.sizeToScene();
-//        primaryStage.setScene(gameScene);
         main.attachKeyHandlers(menuScene);
     }
 
