@@ -3,6 +3,7 @@ package UI;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -19,6 +20,9 @@ public class Main2 extends Application {
 
     private double tileSize = 40;
 
+    private Image imagePlayer = new Image(getClass().getResourceAsStream("/UI/hagried.jpg"));
+    private Image imagePlayer2 = new Image(getClass().getResourceAsStream("/UI/william.jpg"));
+
     @Override
     public void start(Stage stage){
         Pane root = new Pane();
@@ -31,8 +35,9 @@ public class Main2 extends Application {
             }
         }
 
-        Player2 player = new Player2(tileSize, tileSize, 30, 30, 200);
-        root.getChildren().add(player.getRectangle());
+        Player2 player = new Player2(imagePlayer, tileSize, tileSize, 35, 35, 150);
+        Player2 player2 = new Player2(imagePlayer2, 13*tileSize, 13*tileSize, 35, 35, 150);
+        root.getChildren().addAll(player.getRectangle(), player2.getRectangle());
 
         scene.setOnKeyPressed(event -> activeKeys.add(event.getCode()));
         scene.setOnKeyReleased(event -> activeKeys.remove(event.getCode()));
@@ -49,6 +54,7 @@ public class Main2 extends Application {
                 double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
 
                 player.update(deltaTime, activeKeys, map);
+                player2.update(deltaTime, activeKeys, map);
                 lastUpdate = now;
             }
         };

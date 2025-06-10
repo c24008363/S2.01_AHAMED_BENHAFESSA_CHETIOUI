@@ -23,15 +23,21 @@ public class Terrain {
                 if (y == 0 || y == rows - 1 || x == 0 || x == cols - 1) {
                     type = TileType.WALL;
 
-                    // ✅ Zone de spawn du joueur : (1,1), (1,2), (2,1)
+                    // ✅ Zone de spawn du joueur haut-gauche : (1,1), (1,2), (2,1)
                 } else if ((x == 1 && y == 1) || (x == 1 && y == 2) || (x == 2 && y == 1)) {
+                    type = TileType.EMPTY;
+
+                    // ✅ Zone de spawn du joueur bas-droite : (cols-2, rows-2), (cols-2, rows-3), (cols-3, rows-2)
+                } else if ((x == cols - 2 && y == rows - 2) ||
+                        (x == cols - 2 && y == rows - 3) ||
+                        (x == cols - 3 && y == rows - 2)) {
                     type = TileType.EMPTY;
 
                     // Murs fixes aux croisements (style Bomberman)
                 } else if (x % 2 == 0 && y % 2 == 0) {
                     type = TileType.WALL;
 
-                    // Le reste : 20% destructible, 80% vide
+                    // Le reste : 50% destructible, 50% vide
                 } else {
                     type = Math.random() < 0.5 ? TileType.DESTRUCTIBLE : TileType.EMPTY;
                 }

@@ -6,9 +6,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 
 public class Player2 extends Character2{
-    public Player2(double x, double y, double width, double height, double speed) {
+    private Image image;
+    public Player2(Image image, double x, double y, double width, double height, double speed) {
         super(x, y, width, height, speed);
-        Image image = new Image(getClass().getResourceAsStream("/UI/hagried.jpg"));
+        this.image = image;
         getRectangle().setFill(new ImagePattern(image));
     }
 
