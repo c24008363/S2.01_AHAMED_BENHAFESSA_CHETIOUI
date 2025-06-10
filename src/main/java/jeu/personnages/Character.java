@@ -13,7 +13,10 @@ public abstract class Character {
     protected int[][] gameMatrix;
     protected int id;
     private ObjectProperty<Image> imageProperty = new SimpleObjectProperty<>();
-    private int bombCount = 1;
+    private int bombCount = 5;
+    private boolean isInBomb = false;
+
+
 
     public Character(int startRow, int startCol, int[][] gameMatrix, int id, Image image, int tileSize) {
         this.row = startRow;
@@ -49,6 +52,10 @@ public abstract class Character {
         this.y = y;
     }
 
+    public boolean isInBomb() { return isInBomb;}
+
+    public void setInBomb(boolean inBomb) { isInBomb = inBomb;}
+
     public Image getImage() {return imageProperty.get();}
     public void setImage(Image image) { this.imageProperty.set(image);}
 
@@ -57,7 +64,9 @@ public abstract class Character {
             setY(getY() - 1);
             row = (getY()+(tileSize-5)/2)/tileSize;
             System.out.print("y="+y);
-            System.out.println("row="+row);
+            System.out.print(" row="+row);
+            System.out.println(" "+isInBomb);
+            updateIsInBomb(tileSize);
         }
     }
 
@@ -66,7 +75,9 @@ public abstract class Character {
             setY(getY() + 1);
             row = (getY()+(tileSize-5)/2)/tileSize;
             System.out.print("y="+y);
-            System.out.println("row="+row);
+            System.out.print("row="+row);
+            System.out.println(" "+isInBomb);
+            updateIsInBomb(tileSize);
         }
 
     }
@@ -76,7 +87,9 @@ public abstract class Character {
             setX(getX() - 1);
             col = (getX()+(tileSize-5)/2)/tileSize;
             System.out.print("x="+x);
-            System.out.println("col="+col);
+            System.out.print("col="+col);
+            System.out.println(" "+isInBomb);
+            updateIsInBomb(tileSize);
 
         }
     }
@@ -86,8 +99,9 @@ public abstract class Character {
             setX(getX() + 1);
             col = (getX()+(tileSize-5)/2)/tileSize;
             System.out.print("x="+x);
-            System.out.println("col="+col);
-
+            System.out.print("col="+col);
+            System.out.println(" "+isInBomb);
+            updateIsInBomb(tileSize);
         }
     }
 
@@ -96,14 +110,42 @@ public abstract class Character {
         if (x / TileSize <= 0 || y / TileSize <= 0 || x / TileSize >= gameMatrix.length || y / TileSize >= gameMatrix[0].length)
             return false;
 
-        return gameMatrix[(x) / TileSize][(y) / TileSize] == 0 //haut gauche
-                &&
-                gameMatrix[(x+(TileSize-5)) / TileSize][(y+(TileSize-5)) / TileSize] == 0 //bas droite
-                &&
-                gameMatrix[((x)+TileSize-5) / TileSize][(y) / TileSize] == 0 //haut droite
-                &&
-                gameMatrix[(x) / TileSize][(y+TileSize-5) / TileSize] == 0; //bas gauche
+        if (!isInBomb) {
+            return gameMatrix[(x) / TileSize][(y) / TileSize] == 0 //haut gauche
+                    &&
+                    gameMatrix[(x + (TileSize - 5)) / TileSize][(y + (TileSize - 5)) / TileSize] == 0 //bas droite
+                    &&
+                    gameMatrix[((x) + TileSize - 5) / TileSize][(y) / TileSize] == 0 //haut droite
+                    &&
+                    gameMatrix[(x) / TileSize][(y + TileSize - 5) / TileSize] == 0; //bas gauche
+        } else {
+            return (gameMatrix[(x) / TileSize][(y) / TileSize] == 0 || gameMatrix[(x) / TileSize][(y) / TileSize] == 3) //haut gauche
+                    &&
+                    (gameMatrix[(x + (TileSize - 5)) / TileSize][(y + (TileSize - 5)) / TileSize] == 0 || gameMatrix[(x + (TileSize - 5)) / TileSize][(y + (TileSize - 5)) / TileSize] == 3) //bas droite
+                    &&
+                    (gameMatrix[((x) + TileSize - 5) / TileSize][(y) / TileSize] == 0 || gameMatrix[((x) + TileSize - 5) / TileSize][(y) / TileSize] == 3) //haut droite
+                    &&
+                    (gameMatrix[(x) / TileSize][(y + TileSize - 5) / TileSize] == 0 || gameMatrix[(x) / TileSize][(y + TileSize - 5) / TileSize] == 3);//bas gauche
 
+
+        }
+    }
+
+
+
+    public void updateIsInBomb(int tileSize) {
+        int currentRow = getY() / tileSize;
+        int currentCol = getX() / tileSize;
+
+        // Check all 4 corners of the player
+        boolean topLeft = gameMatrix[currentRow][currentCol] == 3;
+        boolean topRight = gameMatrix[currentRow][(getX() + tileSize - 5) / tileSize] == 3;
+        boolean bottomLeft = gameMatrix[(getY() + tileSize - 5) / tileSize][currentCol] == 3;
+        boolean bottomRight = gameMatrix[(getY() + tileSize - 5) / tileSize][(getX() + tileSize - 5) / tileSize] == 3;
+
+        // Player is considered "in bomb" if ANY corner is on a bomb tile
+        // This allows smoother transition when moving off bombs
+        isInBomb = topLeft || topRight || bottomLeft || bottomRight;
     }
 
     public Bomb placeBomb(int TileSize){

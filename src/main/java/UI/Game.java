@@ -34,15 +34,20 @@ public class Game {
     private ImageView player2View;
 
     private int playerSpeed = 0; //The higher the slower
+    private int player2Speed = 0;
 
     private boolean player1BombPressed = false;
     private boolean player2BombPressed = false;
 
+    // Game state variables
+    private boolean gameOver = false;
+    private String winner = "";
+    private boolean player1Alive = true;
+    private boolean player2Alive = true;
 
     private List<Bomb> bombs = new ArrayList<>();
     private List<Explosion> explosions = new ArrayList<>();
     private final List<TimedExplosion> timedExplosions = new ArrayList<>();
-
 
     public void setBombs(List<Bomb> bombs) {
         this.bombs = bombs;
@@ -54,20 +59,32 @@ public class Game {
         initGame();
     }
 
-    public Game(int BoardsSize, int TileSize){
-        if (BoardsSize%2==0) {
+    public Game(int BoardsSize, int TileSize) {
+        if (BoardsSize % 2 == 0) {
             this.BoardSize = BoardsSize + 1;
             this.TileSize = TileSize;
-        }
-        else {
+        } else {
             this.BoardSize = BoardsSize;
             this.TileSize = TileSize;
         }
         initGame();
     }
 
-    public int getBoardSize() {return BoardSize;}
-    public int getTileSize() {return TileSize;}
+    public int getBoardSize() {
+        return BoardSize;
+    }
+
+    public int getTileSize() {
+        return TileSize;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public String getWinner() {
+        return winner;
+    }
 
     private void initGame() {
         // Load images
@@ -76,7 +93,6 @@ public class Game {
         DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/002-destructible_wall.png"), TileSize, TileSize, false, true);
         player1Image = new Image(getClass().getResourceAsStream("/UI/hagried.jpg"), TileSize, TileSize, false, true);
         player2Image = new Image(getClass().getResourceAsStream("/UI/william.jpg"), TileSize, TileSize, false, true);
-
 
         Random random = new Random();
 
@@ -101,7 +117,6 @@ public class Game {
                 tileView[row][col].setLayoutX(col * TileSize);
                 tileView[row][col].setLayoutY(row * TileSize);
                 root.getChildren().add(tileView[row][col]);
-
             }
         }
 
@@ -112,102 +127,201 @@ public class Game {
         player1View = new ImageView(player1Image);
         player2View = new ImageView(player2Image);
 
-        player1View.setFitWidth(TileSize-5);
-        player1View.setFitHeight(TileSize-5);
-        player2View.setFitWidth(TileSize-5);
-        player2View.setFitHeight(TileSize-5);
+        player1View.setFitWidth(TileSize - 5);
+        player1View.setFitHeight(TileSize - 5);
+        player2View.setFitWidth(TileSize - 5);
+        player2View.setFitHeight(TileSize - 5);
 
         root.getChildren().addAll(player1View, player2View);
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-            if (playerSpeed == 0) {
-                if (activeKeys.contains(KeyCode.Z)) player1.moveUp(TileSize);
-                if (activeKeys.contains(KeyCode.S)) player1.moveDown(TileSize);
-                if (activeKeys.contains(KeyCode.Q)) player1.moveLeft(TileSize);
-                if (activeKeys.contains(KeyCode.D)) player1.moveRight(TileSize);
-                if (activeKeys.contains(KeyCode.E)) {
-                    if (!player1BombPressed && player1.getBombCount() > 0) {
-                        bombs.add(player1.placeBomb(TileSize));
-                        player1BombPressed = true;
+                // Skip game logic if game is over
+                if (gameOver) return;
+
+                // # -- JOUEUR 1 MOUVEMENT -- #
+                if (playerSpeed == 0 && player1Alive) {
+                    if (activeKeys.contains(KeyCode.Z)) player1.moveUp(TileSize);
+                    if (activeKeys.contains(KeyCode.S)) player1.moveDown(TileSize);
+                    if (activeKeys.contains(KeyCode.Q)) player1.moveLeft(TileSize);
+                    if (activeKeys.contains(KeyCode.D)) player1.moveRight(TileSize);
+                    if (activeKeys.contains(KeyCode.E)) {
+                        if (!player1BombPressed && player1.getBombCount() > 0) {
+                            bombs.add(player1.placeBomb(TileSize));
+                            gameMatrix[player1.getRow()][player1.getCol()] = 3;
+                            player1.setInBomb(true);
+                            player1BombPressed = true;
+                        }
+                    } else {
+                        player1BombPressed = false;
                     }
+                    playerSpeed = 1;
                 } else {
-                    player1BombPressed = false;
+                    playerSpeed -= 1;
                 }
-                playerSpeed = 1;
-            }
-            else{
-                playerSpeed -= 1 ;
-            }
 
-
-            if (activeKeys.contains(KeyCode.I)) player2.moveUp(TileSize);
-            if (activeKeys.contains(KeyCode.K)) player2.moveDown(TileSize);
-            if (activeKeys.contains(KeyCode.J)) player2.moveLeft(TileSize);
-            if (activeKeys.contains(KeyCode.L)) player2.moveRight(TileSize);
-            if (activeKeys.contains(KeyCode.O)) {
-                if (!player2BombPressed && player2.getBombCount() > 0) {
-                    bombs.add(player2.placeBomb(TileSize));
-                    player2BombPressed = true;
+                // # -- JOUEUR 2 MOUVEMENT -- #
+                if (player2Speed == 0 && player2Alive) {
+                    if (activeKeys.contains(KeyCode.I)) player2.moveUp(TileSize);
+                    if (activeKeys.contains(KeyCode.K)) player2.moveDown(TileSize);
+                    if (activeKeys.contains(KeyCode.J)) player2.moveLeft(TileSize);
+                    if (activeKeys.contains(KeyCode.L)) player2.moveRight(TileSize);
+                    if (activeKeys.contains(KeyCode.O)) {
+                        if (!player2BombPressed && player2.getBombCount() > 0) {
+                            bombs.add(player2.placeBomb(TileSize));
+                            gameMatrix[player2.getRow()][player2.getCol()] = 3;
+                            player2BombPressed = true;
+                            player2.setInBomb(true);
+                        }
+                    } else {
+                        player2BombPressed = false;
+                    }
+                    player2Speed = 1;
+                } else {
+                    player2Speed -= 1;
                 }
-            } else {
-                player2BombPressed = false;
-            }
 
-            updatePlayerViewsSmooth();
+                updatePlayerViewsSmooth();
 
-            List<Bomb> explodedBombs = new ArrayList<>();
-            for (Bomb bomb : bombs) {
-                if (bomb.countDown()) {
-                    root.getChildren().remove(bomb.getImageView());
-                    explodedBombs.add(bomb);
+                // Handle bomb explosions
+                List<Bomb> explodedBombs = new ArrayList<>();
+                for (Bomb bomb : bombs) {
+                    if (bomb.countDown()) {
+                        root.getChildren().remove(bomb.getImageView());
+                        explodedBombs.add(bomb);
+                        gameMatrix[bomb.getX()][bomb.getY()] = 0;
 
-                    List<Explosion> newExplosions = generateExplosionsFromBomb(bomb);
+                        List<Explosion> newExplosions = generateExplosionsFromBomb(bomb);
 
-                    for (Explosion exp : newExplosions) {
-                        ImageView explosionView = new ImageView(new Image(getClass().getResourceAsStream("/UI/flame.png"), TileSize, TileSize, false, true));
-                        explosionView.setLayoutX(exp.getY() * TileSize);
-                        explosionView.setLayoutY(exp.getX() * TileSize);
-                        explosionView.setFitWidth(TileSize);
-                        explosionView.setFitHeight(TileSize);
-                        root.getChildren().add(explosionView);
+                        for (Explosion exp : newExplosions) {
+                            ImageView explosionView = new ImageView(new Image(getClass().getResourceAsStream("/UI/flame.png"), TileSize, TileSize, false, true));
+                            explosionView.setLayoutX(exp.getY() * TileSize);
+                            explosionView.setLayoutY(exp.getX() * TileSize);
+                            explosionView.setFitWidth(TileSize);
+                            explosionView.setFitHeight(TileSize);
+                            root.getChildren().add(explosionView);
 
-                        timedExplosions.add(new TimedExplosion(exp, explosionView, now));
+                            timedExplosions.add(new TimedExplosion(exp, explosionView, now));
+                        }
                     }
                 }
-            }
 
-            List<TimedExplosion> expiredExplosions = new ArrayList<>();
-            for (TimedExplosion te : timedExplosions) {
-                if ((now - te.getCreatedTimeNano()) >= 500_000_000L) { // 0.5 seconds in nanoseconds
-                    root.getChildren().remove(te.getImageView());
-                    expiredExplosions.add(te);
+                // Check for player hits during active explosions
+                checkPlayerHits();
+
+                // Remove expired explosions
+                List<TimedExplosion> expiredExplosions = new ArrayList<>();
+                for (TimedExplosion te : timedExplosions) {
+                    if ((now - te.getCreatedTimeNano()) >= 500_000_000L) {
+                        root.getChildren().remove(te.getImageView());
+                        expiredExplosions.add(te);
+                    }
                 }
-            }
-            timedExplosions.removeAll(expiredExplosions);
+                timedExplosions.removeAll(expiredExplosions);
 
-
-            //fonction()
-            bombs.removeAll(explodedBombs);
-
-
-            updateBombView(root);
+                bombs.removeAll(explodedBombs);
+                updateBombView(root);
             }
         };
         timer.start();
     }
 
-    public void attachKeyHandlers(Scene scene){
-        scene.setOnKeyPressed(e -> activeKeys.add(e.getCode()));
+    private void checkPlayerHits() {
+        // Check if either player is hit by any active explosion
+        for (TimedExplosion timedExp : timedExplosions) {
+            Explosion exp = timedExp.getExplosion();
+
+            // Check Player 1
+            if (player1Alive && isPlayerInExplosion(player1, exp.getX(), exp.getY(), TileSize)) {
+                handlePlayerHit(1);
+            }
+
+            // Check Player 2
+            if (player2Alive && isPlayerInExplosion(player2, exp.getX(), exp.getY(), TileSize)) {
+                handlePlayerHit(2);
+            }
+        }
+    }
+
+    private void handlePlayerHit(int playerNumber) {
+        if (playerNumber == 1) {
+            player1Alive = false;
+            // Visual feedback - make player semi-transparent or change color
+            player1View.setOpacity(0.3);
+            System.out.println("Player 1 has been eliminated!");
+
+            if (player2Alive) {
+                endGame("Player 2");
+            } else {
+                endGame("Draw");
+            }
+        } else if (playerNumber == 2) {
+            player2Alive = false;
+            // Visual feedback - make player semi-transparent or change color
+            player2View.setOpacity(0.3);
+            System.out.println("Player 2 has been eliminated!");
+
+            if (player1Alive) {
+                endGame("Player 1");
+            } else {
+                endGame("Draw");
+            }
+        }
+    }
+
+    private void endGame(String winner) {
+        this.gameOver = true;
+        this.winner = winner;
+        System.out.println("Game Over! Winner: " + winner);
+
+        // You can add more end game logic here:
+        // - Show game over screen
+        // - Display restart button
+        // - Save high scores
+        // - etc.
+    }
+
+    public void attachKeyHandlers(Scene scene) {
+        scene.setOnKeyPressed(e -> {
+            if (!gameOver) {
+                activeKeys.add(e.getCode());
+            }
+            // Add restart functionality
+            if (gameOver && e.getCode() == KeyCode.R) {
+                restartGame();
+            }
+        });
         scene.setOnKeyReleased(e -> activeKeys.remove(e.getCode()));
+    }
+
+    private void restartGame() {
+        // Reset game state
+        gameOver = false;
+        winner = "";
+        player1Alive = true;
+        player2Alive = true;
+
+        // Clear all bombs and explosions
+        bombs.clear();
+        timedExplosions.clear();
+
+        // Reset player positions and states
+        player1 = new Player(1, 1, gameMatrix, 1, player1Image, TileSize);
+        player2 = new Player(BoardSize - 2, BoardSize - 2, gameMatrix, 2, player2Image, TileSize);
+
+        // Reset visual elements
+        player1View.setOpacity(1.0);
+        player2View.setOpacity(1.0);
+
+        System.out.println("Game restarted! Press R to restart when game over.");
     }
 
     private List<Explosion> generateExplosionsFromBomb(Bomb bomb) {
         List<Explosion> explosionList = new ArrayList<>();
         int x = bomb.getX();
         int y = bomb.getY();
-        int range = 1; // you can make this dynamic later
+        int range = 3; // Reduced range for better gameplay balance
 
         // Center explosion
         explosionList.add(new Explosion(x, y, 0));
@@ -234,7 +348,7 @@ public class Game {
                 explosionList.add(new Explosion(nx, ny, dir + 1));
 
                 // Stop after hitting destructible wall
-                if (gameMatrix[nx][ny] == 1){
+                if (gameMatrix[nx][ny] == 1) {
                     gameMatrix[nx][ny] = 0;
                     tileView[nx][ny].setImage(emptyImage);
                     break;
@@ -242,28 +356,46 @@ public class Game {
             }
         }
 
-
         return explosionList;
     }
 
+    private boolean isPlayerInExplosion(Player player, int explosionRow, int explosionCol, int tileSize) {
+        // Get player's current tile position
+        int playerRow = player.getY() / tileSize;
+        int playerCol = player.getX() / tileSize;
 
-//    private void updatePlayerViews() {
-//        player1View.setLayoutX(player1.getCol() * TileSize);
-//        player1View.setLayoutY(player1.getRow() * TileSize);
-//        player2View.setLayoutX(player2.getCol() * TileSize);
-//        player2View.setLayoutY(player2.getRow() * TileSize);
-//    }
+        // Check if player's center is in the explosion tile
+        if (playerRow == explosionRow && playerCol == explosionCol) {
+            return true;
+        }
+
+        // Also check player's corners for more precise collision
+        int playerX = player.getX();
+        int playerY = player.getY();
+
+        // Check all 4 corners of the player
+        boolean topLeft = (playerY / tileSize == explosionRow) && (playerX / tileSize == explosionCol);
+        boolean topRight = (playerY / tileSize == explosionRow) && ((playerX + tileSize - 5) / tileSize == explosionCol);
+        boolean bottomLeft = ((playerY + tileSize - 5) / tileSize == explosionRow) && (playerX / tileSize == explosionCol);
+        boolean bottomRight = ((playerY + tileSize - 5) / tileSize == explosionRow) && ((playerX + tileSize - 5) / tileSize == explosionCol);
+
+        return topLeft || topRight || bottomLeft || bottomRight;
+    }
 
     private void updatePlayerViewsSmooth() {
-        player1View.setLayoutX(player1.getX());
-        player1View.setLayoutY(player1.getY());
-        player2View.setLayoutX(player2.getX());
-        player2View.setLayoutY(player2.getY());
+        if (player1Alive) {
+            player1View.setLayoutX(player1.getX());
+            player1View.setLayoutY(player1.getY());
+        }
+        if (player2Alive) {
+            player2View.setLayoutX(player2.getX());
+            player2View.setLayoutY(player2.getY());
+        }
     }
 
     private void updateBombView(Pane root) {
-        for (Bomb bomb: bombs){
-            if (bomb.getImageView() == null){
+        for (Bomb bomb : bombs) {
+            if (bomb.getImageView() == null) {
                 bomb.setImageView(new ImageView(new Image(getClass().getResourceAsStream("/UI/bomb.png"), TileSize, TileSize, false, true)));
                 bomb.getImageView().setFitWidth(TileSize);
                 bomb.getImageView().setFitHeight(TileSize);
@@ -282,8 +414,7 @@ public class Game {
         };
     }
 
-    public Pane getRoot(){
+    public Pane getRoot() {
         return root;
     }
-
 }
