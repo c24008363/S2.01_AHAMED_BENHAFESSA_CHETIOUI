@@ -71,9 +71,6 @@ public abstract class Character {
         if (canMoveToRework(y-2, x, tileSize )) {
             setY(getY() - 1);
             row = (getY()+(tileSize-5)/2)/tileSize;
-            System.out.print("y="+y);
-            System.out.print(" row="+row);
-            System.out.println(" "+isInBomb);
             updateIsInBomb(tileSize);
         }
     }
@@ -82,9 +79,6 @@ public abstract class Character {
         if (canMoveToRework(y+2, x, tileSize )) {
             setY(getY() + 1);
             row = (getY()+(tileSize-5)/2)/tileSize;
-            System.out.print("y="+y);
-            System.out.print("row="+row);
-            System.out.println(" "+isInBomb);
             updateIsInBomb(tileSize);
         }
 
@@ -94,9 +88,6 @@ public abstract class Character {
         if (canMoveToRework(y, (x-2), tileSize )) {
             setX(getX() - 1);
             col = (getX()+(tileSize-5)/2)/tileSize;
-            System.out.print("x="+x);
-            System.out.print("col="+col);
-            System.out.println(" "+isInBomb);
             updateIsInBomb(tileSize);
 
         }
@@ -106,9 +97,6 @@ public abstract class Character {
         if (canMoveToRework(y, (x+2), tileSize )){
             setX(getX() + 1);
             col = (getX()+(tileSize-5)/2)/tileSize;
-            System.out.print("x="+x);
-            System.out.print("col="+col);
-            System.out.println(" "+isInBomb);
             updateIsInBomb(tileSize);
         }
     }
@@ -159,8 +147,7 @@ public abstract class Character {
 
     public Bomb placeBomb(int TileSize){
         bombCount = bombCount -1;
-        return new Bomb(this.row, this.col, new Image(getClass().getResourceAsStream("/UI/005-bombFace.png"),
-                        TileSize, TileSize, false, true), this, 1);
+        return new Bomb(this.row, this.col, "bomb.png", this, 1);
 
     }
 

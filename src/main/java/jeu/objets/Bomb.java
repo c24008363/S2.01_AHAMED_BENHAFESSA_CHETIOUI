@@ -1,9 +1,12 @@
 package jeu.objets;
 
+import UI.MainMenu;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import jeu.items.BombUp;
 import jeu.personnages.Character;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -12,19 +15,28 @@ public class Bomb {
     private int y;
     private Image image;
     private Character character;
-    private int range; //dureeVie
+    private boolean exists = false;
     private ImageView imageView;
 
     private final Instant placedAt;
     private final long fuseSeconds = 2; // Bomb fuse time in seconds
     private boolean exploded = false;
 
-    public Bomb(int x, int y, Image image, Character character, int range) {
+    public Bomb(int x, int y, String path, Character character, int range) {
         this.x = x;
         this.y = y;
-        this.image = image;
+
+        try{
+            image = new Image(BombUp.class.getResourceAsStream(MainMenu.getTheme()+path));
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Custom theme image not found. Using default.");
+            image = new Image(BombUp.class.getResourceAsStream("/UI/themes/default/"+path));
+        }
+
+        this.imageView = new ImageView(image);
         this.character = character;
-        this.range = range;
         this.placedAt = Instant.now();
     }
 
@@ -55,6 +67,10 @@ public class Bomb {
     public void setX(int x) {
         this.x = x;
     }
+
+    public void setExists(boolean exists) {this.exists = exists;}
+
+    public boolean isExists() {return exists;}
 
     public int getY() {
         return y;
