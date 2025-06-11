@@ -198,8 +198,8 @@ public class Game {
                 tempItem = player1.isOnGatherable(items, TileSize);
                 if(tempItem != null){
                     useItem(tempItem, player1, player2);
+                    tileView[tempItem.getRow()][tempItem.getCol()].setImage(emptyImage);
                     gameMatrix[tempItem.getRow()][tempItem.getCol()] = 0;
-
                     items.remove(tempItem);
                 }
                 tempItem = player2.isOnGatherable(items, TileSize);
@@ -299,6 +299,54 @@ public class Game {
         }
     }
 
+    public void initGameRestart(){
+        emptyImage = new Image(getClass().getResourceAsStream("/UI/000-floor.png"), TileSize, TileSize, false, true);
+        IndestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/001-durable_wall.png"), TileSize, TileSize, false, true);
+        DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/002-destructible_wall.png"), TileSize, TileSize, false, true);
+        player1Image = new Image(getClass().getResourceAsStream("/UI/hagried.jpg"), TileSize, TileSize, false, true);
+        player2Image = new Image(getClass().getResourceAsStream("/UI/william.jpg"), TileSize, TileSize, false, true);
+
+        Random random = new Random();
+
+        for (int row = 0; row < BoardSize; row++) {
+            for (int col = 0; col < BoardSize; col++) {
+                if (row == 0 || row == BoardSize - 1 || col == 0 || col == BoardSize - 1 || (row % 2 == 0 && col % 2 == 0)) {
+                    gameMatrix[row][col] = 2;
+                } else {
+                    gameMatrix[row][col] = (random.nextInt(100) < 80) ? 1 : 0;
+                }
+
+                if ((row == 1 && col == 1) || (row == 1 && col == 2) || (row == 2 && col == 1) ||
+                        (row == 1 && col == BoardSize - 3) || (row == 1 && col == BoardSize - 2) || (row == 2 && col == BoardSize - 2) ||
+                        (row == BoardSize - 2 && col == BoardSize - 3) || (row == BoardSize - 2 && col == BoardSize - 2) || (row == BoardSize - 3 && col == BoardSize - 2) ||
+                        (row == BoardSize - 2 && col == 1) || (row == BoardSize - 2 && col == 2) || (row == BoardSize - 3 && col == 1)) {
+                    gameMatrix[row][col] = 0;
+                }
+
+                tileView[row][col] = new ImageView(getImageForValue(gameMatrix[row][col]));
+                tileView[row][col].setFitWidth(TileSize);
+                tileView[row][col].setFitHeight(TileSize);
+                tileView[row][col].setLayoutX(col * TileSize);
+                tileView[row][col].setLayoutY(row * TileSize);
+                root.getChildren().add(tileView[row][col]);
+            }
+        }
+        // Setup players
+        player1 = new Player(1, 1, gameMatrix, 1, player1Image, TileSize);
+        player2 = new Player(BoardSize - 2, BoardSize - 2, gameMatrix, 2, player2Image, TileSize);
+
+        player1View = new ImageView(player1Image);
+        player2View = new ImageView(player2Image);
+
+        player1View.setFitWidth(TileSize - 5);
+        player1View.setFitHeight(TileSize - 5);
+        player2View.setFitWidth(TileSize - 5);
+        player2View.setFitHeight(TileSize - 5);
+
+        root.getChildren().addAll(player1View, player2View);
+
+    }
+
     private void endGame(String winner) {
         this.gameOver = true;
         this.winner = winner;
@@ -326,7 +374,7 @@ public class Game {
 
     private void restartGame() {
         // Reset game state
-        initGame();
+        initGameRestart();
         gameOver = false;
         winner = "";
         player1Alive = true;
@@ -381,7 +429,7 @@ public class Game {
                     tileView[nx][ny].setImage(emptyImage);
 
                     // 1 in 5 chance to spawn a random item
-                    if (new Random().nextInt(1) == 0) {
+                    if (new Random().nextInt(5) == 0) {
                         int randomNum = new Random().nextInt(2); //INCREASE THE NEXT INT (X) IF NEW ITEM IMPLEMENTED, AND ADAPT THE SWITCH CASE
                         Gatherable item;
 
@@ -427,10 +475,10 @@ public class Game {
         int playerY = player.getY();
 
         // Check all 4 corners of the player
-        boolean topLeft = (playerY / tileSize == explosionRow) && (playerX / tileSize == explosionCol);
-        boolean topRight = (playerY / tileSize == explosionRow) && ((playerX + tileSize - 5) / tileSize == explosionCol);
-        boolean bottomLeft = ((playerY + tileSize - 5) / tileSize == explosionRow) && (playerX / tileSize == explosionCol);
-        boolean bottomRight = ((playerY + tileSize - 5) / tileSize == explosionRow) && ((playerX + tileSize - 5) / tileSize == explosionCol);
+        boolean topLeft = ((playerY + 15) / tileSize == explosionRow) && ((playerX + 15) / tileSize == explosionCol);
+        boolean topRight = ((playerY + 15) / tileSize == explosionRow) && ((playerX + tileSize - 15) / tileSize == explosionCol);
+        boolean bottomLeft = ((playerY + tileSize - 15) / tileSize == explosionRow) && ((playerX+15) / tileSize == explosionCol);
+        boolean bottomRight = ((playerY + tileSize - 15) / tileSize == explosionRow) && ((playerX + tileSize - 15) / tileSize == explosionCol);
 
         return topLeft || topRight || bottomLeft || bottomRight;
     }
