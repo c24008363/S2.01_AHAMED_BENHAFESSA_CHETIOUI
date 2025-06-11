@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import jeu.personnages.Player;
 import jeu.personnages.Player2;
 import jeu.terrains.Terrain;
 import jeu.terrains.Tile;
@@ -35,7 +36,7 @@ public class Main2 extends Application {
             }
         }
 
-        Player2 player = new Player2(imagePlayer, tileSize, tileSize, 35, 35, 150);
+        Player player = new Player(imagePlayer, tileSize, tileSize, 35, 35, 150);
         Player2 player2 = new Player2(imagePlayer2, 13*tileSize, 13*tileSize, 35, 35, 150);
         root.getChildren().addAll(player.getRectangle(), player2.getRectangle());
 

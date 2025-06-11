@@ -1,120 +1,91 @@
 package jeu.personnages;
 
-import javafx.scene.image.Image;
-import jeu.objets.Bomb;
+import javafx.scene.input.KeyCode;
+import javafx.scene.shape.Rectangle;
+import jeu.terrains.Terrain;
+import jeu.terrains.Tile;
+import jeu.terrains.TileType;
+
+import java.util.Set;
 
 public abstract class Character {
-    protected int row;
-    protected int col;
-    private int x;
-    private int y;
-    protected int[][] gameMatrix;
-    protected int id;
-    protected Image image;
-    private int bombCount = 1;
+    private Rectangle rectangle;
+    private double x;
+    private double y;
+    private double width;
+    private double height;
+    private double speed;
 
-    public Character(int startRow, int startCol, int[][] gameMatrix, int id, Image image, int tileSize) {
-        this.row = startRow;
-        this.col = startCol;
-        this.gameMatrix = gameMatrix;
-        this.id = id;
-        this.image = image;
-        this.x = startRow*tileSize;
-        this.y = startCol*tileSize;
-    }
+    private long lastBombTime = 0;
+    private final long bombCooldown = 1000;
 
-    public int getRow() {
-        return row;
-    }
-
-    public int getCol() {
-        return col;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
+    public Character(double x, double y, double width, double height, double speed){
+        this.rectangle = new Rectangle(x, y, width, height);
         this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
         this.y = y;
+        this.speed = speed;
     }
 
-    public void moveUp(int tileSize) {
-        if (canMoveToRework(y-2, x, tileSize )) {
-            setY(getY() - 1);
-            row = (getY())/tileSize;
-            System.out.print("y="+y);
-            System.out.println("row="+row);
+    public Rectangle getRectangle(){
+        return rectangle;
+    }
+
+    public void update(double deltaTime, Set<KeyCode> activeKeys, Terrain map){
+        double dx = 0;
+        double dy = 0;
+
+        if (activeKeys.contains(getKeyUp())) dy -= speed * deltaTime;
+        if (activeKeys.contains(getKeyDown())) dy += speed * deltaTime;
+        if (activeKeys.contains(getKeyRight())) dx += speed * deltaTime;
+        if (activeKeys.contains(getKeyLeft())) dx -= speed * deltaTime;
+        if (activeKeys.contains(getKeyUp())) poseBomb(map);
+
+        move(dx, dy, map);
+
+    }
+
+    public void move(double dx, double dy, Terrain terrain) {
+        double newX = getRectangle().getX() + dx;
+        double newY = getRectangle().getY(); // pour le test X
+        if (!isBlocked(newX, newY, terrain)) {
+            getRectangle().setX(newX);
+        }
+
+        newX = getRectangle().getX(); // position X après test
+        newY = getRectangle().getY() + dy;
+        if (!isBlocked(newX, newY, terrain)) {
+            getRectangle().setY(newY);
         }
     }
 
-    public void moveDown(int tileSize) {
-        if (canMoveToRework(y+2, x, tileSize )) {
-            setY(getY() + 1);
-            row = (getY()+(tileSize-5)/2)/tileSize;
-            System.out.print("y="+y);
-            System.out.println("row="+row);
-        }
+    private boolean isBlocked(double x, double y, Terrain terrain) {
+        double width = getRectangle().getWidth();
+        double height = getRectangle().getHeight();
 
+        // Tester les 4 coins du rectangle
+        return isTileBlocked(x, y, terrain) ||                    // coin haut-gauche
+                isTileBlocked(x + width, y, terrain) ||            // coin haut-droit
+                isTileBlocked(x, y + height, terrain) ||           // coin bas-gauche
+                isTileBlocked(x + width, y + height, terrain);     // coin bas-droit
     }
 
-    public void moveLeft(int tileSize) {
-        if (canMoveToRework(y, (x-2), tileSize )) {
-            setX(getX() - 1);
-            col = (getX())/tileSize;
-            System.out.print("x="+x);
-            System.out.println("col="+col);
-
-        }
+    private boolean isTileBlocked(double x, double y, Terrain terrain) {
+        Tile tile = terrain.getTileAt(x, y);
+        if (tile == null) return true;
+        return tile.getType() == TileType.WALL || tile.getType() == TileType.DESTRUCTIBLE;
     }
 
-    public void moveRight(int tileSize) {
-        if (canMoveToRework(y, (x+2), tileSize )){
-            setX(getX() + 1);
-            col = (getX()+(tileSize-5)/2)/tileSize;
-            System.out.print("x="+x);
-            System.out.println("col="+col);
-
-        }
+    public void poseBomb(Terrain map){
+        long now = System.currentTimeMillis();
+        if (now-lastBombTime < bombCooldown) return;
+        lastBombTime = now;
+        System.out.println("Bomb posé par :" + this.getClass().getSimpleName());
     }
 
 
-    protected boolean canMoveToRework(int x, int y, int TileSize) {
-        if (x / TileSize <= 0 || y / TileSize <= 0 || x / TileSize >= gameMatrix.length || y / TileSize >= gameMatrix[0].length)
-            return false;
-
-        return gameMatrix[(x) / TileSize][(y) / TileSize] == 0 //haut gauche
-                &&
-                gameMatrix[(x+(TileSize-5)) / TileSize][(y+(TileSize-5)) / TileSize] == 0 //bas droite
-                &&
-                gameMatrix[((x)+TileSize-5) / TileSize][(y) / TileSize] == 0 //haut droite
-                &&
-                gameMatrix[(x) / TileSize][(y+TileSize-5) / TileSize] == 0; //bas gauche
-
-    }
-
-    public Bomb placeBomb(int TileSize){
-        bombCount = bombCount -1;
-        return new Bomb(this.row, this.col, new Image(getClass().getResourceAsStream("/UI/005-bombFace.png"),
-                        TileSize, TileSize, false, true), this, 1);
-
-    }
-
-    public int getBombCount() {
-        return bombCount;
-    }
-
-    public void setBombCount(int bombCount) {
-        this.bombCount = bombCount;
-    }
-
-    public abstract void update(); // let subclasses define their behavior per frame
+    public abstract KeyCode getKeyUp();
+    public abstract KeyCode getKeyDown();
+    public abstract KeyCode getKeyRight();
+    public abstract KeyCode getKeyLeft();
+    public abstract KeyCode getKeyBomb();
 }
