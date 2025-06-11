@@ -21,8 +21,8 @@ public class Main2 extends Application {
 
     private double tileSize = 40;
 
-    private Image imagePlayer = new Image(getClass().getResourceAsStream("/UI/hagried.jpg"));
-    private Image imagePlayer2 = new Image(getClass().getResourceAsStream("/UI/william.jpg"));
+    private Image imagePlayer = new Image(getClass().getResourceAsStream("/UI/player.png"));
+    private Image imagePlayer2 = new Image(getClass().getResourceAsStream("/UI/player2.png"));
 
     @Override
     public void start(Stage stage){
@@ -30,18 +30,22 @@ public class Main2 extends Application {
         Scene scene = new Scene(root);
 
         Terrain map = new Terrain(15, 15, tileSize);
+        map.setPane(root);
         for (Tile[] row : map.getGrid()) {
             for (Tile tile : row){
                 root.getChildren().add(tile.getView());
             }
         }
 
-        Player player = new Player(imagePlayer, tileSize, tileSize, 35, 35, 150);
-        Player2 player2 = new Player2(imagePlayer2, 13*tileSize, 13*tileSize, 35, 35, 150);
+        Player player = new Player(imagePlayer, tileSize, tileSize, tileSize-1, tileSize-1, 150);
+        Player2 player2 = new Player2(imagePlayer2, 13*tileSize, 13*tileSize, tileSize-1, tileSize-1, 150);
         root.getChildren().addAll(player.getRectangle(), player2.getRectangle());
 
         scene.setOnKeyPressed(event -> activeKeys.add(event.getCode()));
         scene.setOnKeyReleased(event -> activeKeys.remove(event.getCode()));
+
+        player.setBombPlacer(bomb -> root.getChildren().add(bomb.getView()));
+        player2.setBombPlacer(bomb -> root.getChildren().add(bomb.getView()));
 
         AnimationTimer timer = new AnimationTimer() {
 

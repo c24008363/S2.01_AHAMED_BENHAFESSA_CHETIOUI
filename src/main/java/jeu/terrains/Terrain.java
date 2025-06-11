@@ -1,10 +1,14 @@
 package jeu.terrains;
 
+import javafx.scene.layout.Pane;
+
 public class Terrain {
     private final Tile[][] grid;
     private final int cols;
     private final int rows;
     private final double tileSize;
+
+    private Pane pane;
 
     public Terrain(int cols, int rows, double tileSize){
         this.cols = cols;
@@ -62,5 +66,11 @@ public class Terrain {
         return grid[row][col];
     }
 
-    
+    public void setPane(Pane pane){
+        this.pane = pane;
+    }
+
+    public Pane getPane(){
+        return pane;
+    }
 }

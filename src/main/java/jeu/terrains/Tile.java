@@ -9,8 +9,9 @@ public class Tile {
     private final TileType type;
     private final Rectangle view;
 
-    private Image imageDestructibleWall = new Image(getClass().getResourceAsStream("/UI/002-destructible_wall.png"));
-    private Image imageWall = new Image(getClass().getResourceAsStream(("/UI/001-durable_wall.png")));
+    private Image imageDestructibleWall = new Image(getClass().getResourceAsStream("/UI/destructible.png"));
+    private Image imageWall = new Image(getClass().getResourceAsStream(("/UI/wall.png")));
+    private Image imageEmpty = new Image(getClass().getResourceAsStream("/UI/empty.png"));
 
     public Tile(TileType type, double size, double x, double y) {
         this.type = type;
@@ -21,7 +22,7 @@ public class Tile {
         switch (type){
             case WALL -> view.setFill(new ImagePattern(imageWall));
             case DESTRUCTIBLE -> view.setFill(new ImagePattern(imageDestructibleWall));
-            case EMPTY -> view.setFill(Color.LIGHTGREEN);
+            case EMPTY -> view.setFill(new ImagePattern(imageEmpty));
         }
     }
 

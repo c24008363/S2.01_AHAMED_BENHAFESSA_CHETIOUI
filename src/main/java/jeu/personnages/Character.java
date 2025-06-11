@@ -1,12 +1,15 @@
 package jeu.personnages;
 
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
+import jeu.objets.Bomb;
 import jeu.terrains.Terrain;
 import jeu.terrains.Tile;
 import jeu.terrains.TileType;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 public abstract class Character {
     private Rectangle rectangle;
@@ -18,6 +21,8 @@ public abstract class Character {
 
     private long lastBombTime = 0;
     private final long bombCooldown = 1000;
+
+    private Consumer<Bomb> bombPlacer;
 
     public Character(double x, double y, double width, double height, double speed){
         this.rectangle = new Rectangle(x, y, width, height);
@@ -38,7 +43,7 @@ public abstract class Character {
         if (activeKeys.contains(getKeyDown())) dy += speed * deltaTime;
         if (activeKeys.contains(getKeyRight())) dx += speed * deltaTime;
         if (activeKeys.contains(getKeyLeft())) dx -= speed * deltaTime;
-        if (activeKeys.contains(getKeyUp())) poseBomb(map);
+        if (activeKeys.contains(getKeyBomb())) poseBomb(map);
 
         move(dx, dy, map);
 
@@ -79,9 +84,25 @@ public abstract class Character {
         long now = System.currentTimeMillis();
         if (now-lastBombTime < bombCooldown) return;
         lastBombTime = now;
-        System.out.println("Bomb posé par :" + this.getClass().getSimpleName());
+
+        double centerX = getRectangle().getX() + getRectangle().getWidth() / 2;
+        double centerY = getRectangle().getY() + getRectangle().getHeight() / 2;
+
+        int tileCol = (int) (centerX / map.getTileSize());
+        int tileRow = (int) (centerY / map.getTileSize());
+
+        double bombX = tileCol * map.getTileSize();
+        double bombY = tileRow * map.getTileSize();
+        bombX += getRectangle().getWidth()/2;
+        bombY += getRectangle().getHeight()/2;
+
+        Bomb bomb = new Bomb(bombX, bombY, map.getTileSize()/2-5, map.getPane());
+        if (bombPlacer != null) bombPlacer.accept(bomb);
     }
 
+    public void setBombPlacer(Consumer<Bomb> bombPlacer){
+        this.bombPlacer = bombPlacer;
+    }
 
     public abstract KeyCode getKeyUp();
     public abstract KeyCode getKeyDown();
