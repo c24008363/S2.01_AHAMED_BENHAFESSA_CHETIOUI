@@ -39,9 +39,13 @@ public class PlayerStats {
     public void save() {
         try (PrintWriter pw = new PrintWriter(new FileWriter(filePath))) {
             pw.println(gamesPlayed);
+            System.out.println(gamesPlayed);
             pw.println(gamesWon);
+            System.out.println(gamesWon);
             pw.println(blocksDestroyed);
+            System.out.println(blocksDestroyed);
             pw.println(itemsCollected);
+            System.out.println(itemsCollected);
         } catch (IOException e) {
             System.err.println("Failed to save stats: " + filePath);
         }

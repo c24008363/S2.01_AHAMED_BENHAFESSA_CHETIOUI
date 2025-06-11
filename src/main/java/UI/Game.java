@@ -140,8 +140,10 @@ public class Game {
             player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player2.jpg"), TileSize, TileSize, false, true);
         }
 
-        //MainMenu.getStats1().incrementGamesPlayed();
-        //MainMenu.getStats2().incrementGamesPlayed();
+        if (MainMenu.getStats1()!=null) {
+            MainMenu.getStats1().incrementGamesPlayed();
+            MainMenu.getStats2().incrementGamesPlayed();
+        }
 
 
 
@@ -241,6 +243,7 @@ public class Game {
 
                 tempItem = player1.isOnGatherable(items, TileSize);
                 if(tempItem != null){
+                    MainMenu.getStats1().incrementItemsCollected();
                     useItem(tempItem, player1, player2);
                     tileView[tempItem.getRow()][tempItem.getCol()].setImage(emptyImage);
                     gameMatrix[tempItem.getRow()][tempItem.getCol()] = 0;
@@ -248,6 +251,7 @@ public class Game {
                 }
                 tempItem = player2.isOnGatherable(items, TileSize);
                 if(tempItem != null){
+                    MainMenu.getStats2().incrementItemsCollected();
                     useItem(tempItem, player2, player1);
                     tileView[tempItem.getRow()][tempItem.getCol()].setImage(emptyImage);
                     gameMatrix[tempItem.getRow()][tempItem.getCol()] = 0;
@@ -325,6 +329,7 @@ public class Game {
             System.out.println("Player 1 has been eliminated!");
 
             if (player2Alive) {
+                MainMenu.getStats2().incrementGamesWon();
                 endGame("Player 2");
             } else {
                 endGame("Draw");
@@ -336,6 +341,7 @@ public class Game {
             System.out.println("Player 2 has been eliminated!");
 
             if (player1Alive) {
+                MainMenu.getStats1().incrementGamesWon();
                 endGame("Player 1");
             } else {
                 endGame("Draw");
@@ -386,6 +392,11 @@ public class Game {
             player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player2.jpg"), TileSize, TileSize, false, true);
         }
 
+        if (MainMenu.getStats1()!=null) {
+            MainMenu.getStats1().incrementGamesPlayed();
+            MainMenu.getStats2().incrementGamesPlayed();
+        }
+
         Random random = new Random();
 
         for (int row = 0; row < BoardSize; row++) {
@@ -430,6 +441,8 @@ public class Game {
     private void endGame(String winner) {
         this.gameOver = true;
         this.winner = winner;
+        MainMenu.getStats1().save();
+        MainMenu.getStats2().save();
         System.out.println("Game Over! Winner: " + winner);
 
         // You can add more end game logic here:
@@ -506,6 +519,14 @@ public class Game {
 
                 if (gameMatrix[nx][ny] == 1) {
                     gameMatrix[nx][ny] = 0;
+                    if (player1!=null) {
+                        if (bomb.getCharacter() == player1) {
+                            MainMenu.getStats1().incrementBlocksDestroyed();
+                        }
+                        else {
+                            MainMenu.getStats2().incrementBlocksDestroyed();
+                        }
+                    }
                     tileView[nx][ny].setImage(emptyImage);
 
                     // 1 in 5 chance to spawn a random item
