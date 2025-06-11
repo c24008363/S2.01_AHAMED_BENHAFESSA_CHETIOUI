@@ -121,20 +121,20 @@ public class Game {
             DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"destructible_wall.png"), TileSize, TileSize, false, true);
         }
         try{
-            player1Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"hagried.jpg"), TileSize, TileSize, false, true);
+            player1Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"player1.jpg"), TileSize, TileSize, false, true);
         }
         catch (Exception e) {
             // Fallback to default
             System.err.println("Custom theme image not found. Using default.");
-            player1Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"hagried.jpg"), TileSize, TileSize, false, true);
+            player1Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player1.jpg"), TileSize, TileSize, false, true);
         }
         try{
-            player2Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"william.jpg"), TileSize, TileSize, false, true);
+            player2Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"player2.jpg"), TileSize, TileSize, false, true);
         }
         catch (Exception e) {
             // Fallback to default
             System.err.println("Custom theme image not found. Using default.");
-            player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"william.jpg"), TileSize, TileSize, false, true);
+            player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player2.jpg"), TileSize, TileSize, false, true);
         }
 
         Random random = new Random();
@@ -202,7 +202,7 @@ public class Game {
                     } else {
                         player1BombPressed = false;
                     }
-                    playerSpeed = 1;
+                    playerSpeed = 0;
                 } else {
                     playerSpeed -= 1;
                 }
@@ -223,7 +223,7 @@ public class Game {
                     } else {
                         player2BombPressed = false;
                     }
-                    player2Speed = 1;
+                    player2Speed = 0;
                 } else {
                     player2Speed -= 1;
                 }
@@ -361,20 +361,20 @@ public class Game {
             DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"destructible_wall.png"), TileSize, TileSize, false, true);
         }
         try{
-            player1Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"hagried.jpg"), TileSize, TileSize, false, true);
+            player1Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"player1.jpg"), TileSize, TileSize, false, true);
         }
         catch (Exception e) {
             // Fallback to default
             System.err.println("Custom theme image not found. Using default.");
-            player1Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"hagried.jpg"), TileSize, TileSize, false, true);
+            player1Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player1.jpg"), TileSize, TileSize, false, true);
         }
         try{
-            player2Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"william.jpg"), TileSize, TileSize, false, true);
+            player2Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"player2.jpg"), TileSize, TileSize, false, true);
         }
         catch (Exception e) {
             // Fallback to default
             System.err.println("Custom theme image not found. Using default.");
-            player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"william.jpg"), TileSize, TileSize, false, true);
+            player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player2.jpg"), TileSize, TileSize, false, true);
         }
 
         Random random = new Random();
