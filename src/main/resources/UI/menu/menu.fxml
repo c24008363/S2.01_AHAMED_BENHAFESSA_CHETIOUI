@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+           fx:controller="UI.controller.MenuController"
+            prefHeight="400.0" prefWidth="600.0"
+            stylesheets="@../style/menu.css"
+            styleClass="stack-pane">
+    <VBox spacing="10" alignment="CENTER">
+        <Button text="Jouer" onAction="#handlePlayButton" styleClass="menu-button"/>
+        <Button text="Option" onAction="#handleOptionsClick" styleClass="menu-button"/>
+        <Button text="Quitter" onAction="#handleQuitButton" styleClass="menu-button"/>
+    </VBox>
+</StackPane>

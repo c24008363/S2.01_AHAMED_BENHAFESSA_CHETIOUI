@@ -63,4 +63,6 @@ public class Bomb {
     public void setY(int y) {
         this.y = y;
     }
+
+    public Character getCharacter() {return character;}
 }
