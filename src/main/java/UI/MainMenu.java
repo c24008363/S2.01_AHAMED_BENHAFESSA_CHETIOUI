@@ -13,7 +13,7 @@ public class MainMenu extends Application {
     private Stage primaryStage;
     private Scene menuScene;
     private Scene gameScene;
-    private static int theme;
+    private static String theme;
     private static int tileSize = 40;
     private static int boardSize = 17;
 
@@ -33,12 +33,12 @@ public class MainMenu extends Application {
         MainMenu.tileSize = tileSize;
     }
 
-    public int getTheme() {
+    public static String getTheme() {
         return theme;
     }
 
-    public void setTheme(int theme) {
-        this.theme = theme;
+    public static void setTheme(String theme) {
+        MainMenu.theme = theme;
     }
 
     private Game main =  new Game();
@@ -68,6 +68,7 @@ public class MainMenu extends Application {
         main = new Game(boardSize, tileSize);
         System.out.print(boardSize + "   ");
         System.out.println(tileSize);
+        System.out.println(theme);
         menuScene.setRoot(main.getRoot());
         primaryStage.sizeToScene();
         main.attachKeyHandlers(menuScene);

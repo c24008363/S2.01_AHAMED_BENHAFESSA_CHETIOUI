@@ -61,7 +61,7 @@ public class OptionsWindowController {
         });
     }
 
-    private void populateThemeComboBox() { //Gets the directories of theme located at resources/UI/themes and make them options of combobox
+    private void populateThemeComboBox() {
         try {
             URL url = getClass().getResource("/UI/themes");
             if (url != null) {
@@ -79,9 +79,19 @@ public class OptionsWindowController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         // Set initial selection
         if (!themeComboBox.getItems().isEmpty()) {
             themeComboBox.setValue("Default");
+            MainMenu.setTheme("/UI/themes/Default"); // Initialize MainMenu.theme
         }
+
+        // Update MainMenu.theme when selection changes
+        themeComboBox.setOnAction(e -> {
+            String selectedTheme = themeComboBox.getValue();
+            MainMenu.setTheme("/UI/themes/"+selectedTheme+"/");
+            System.out.println("Theme changed to: " + selectedTheme); // Optional debug
+        });
     }
+
 }

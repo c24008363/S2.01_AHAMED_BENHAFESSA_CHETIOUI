@@ -96,11 +96,46 @@ public class Game {
 
     private void initGame() {
         // Load images
-        emptyImage = new Image(getClass().getResourceAsStream("/UI/floor.png"), TileSize, TileSize, false, true);
-        IndestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/durable_wall.png"), TileSize, TileSize, false, true);
-        DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/destructible_wall.png"), TileSize, TileSize, false, true);
-        player1Image = new Image(getClass().getResourceAsStream("/UI/hagried.jpg"), TileSize, TileSize, false, true);
-        player2Image = new Image(getClass().getResourceAsStream("/UI/william.jpg"), TileSize, TileSize, false, true);
+        try{
+            emptyImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"floor.png"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Custom theme image not found. Using default.");
+            emptyImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"floor.png"), TileSize, TileSize, false, true);
+        }
+        try{
+            IndestructibleWallImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"durable_wall.png"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Custom theme image not found. Using default.");
+            IndestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"durable_wall.png"), TileSize, TileSize, false, true);
+        }
+        try{
+            DestructibleWallImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"destructible_wall.png"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Custom theme image not found. Using default.");
+            DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"destructible_wall.png"), TileSize, TileSize, false, true);
+        }
+        try{
+            player1Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"hagried.jpg"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Custom theme image not found. Using default.");
+            player1Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"hagried.jpg"), TileSize, TileSize, false, true);
+        }
+        try{
+            player2Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"william.jpg"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Custom theme image not found. Using default.");
+            player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"william.jpg"), TileSize, TileSize, false, true);
+        }
 
         Random random = new Random();
 
@@ -300,11 +335,47 @@ public class Game {
     }
 
     public void initGameRestart(){
-        emptyImage = new Image(getClass().getResourceAsStream("/UI/floor.png"), TileSize, TileSize, false, true);
-        IndestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/durable_wall.png"), TileSize, TileSize, false, true);
-        DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/destructible_wall.png"), TileSize, TileSize, false, true);
-        player1Image = new Image(getClass().getResourceAsStream("/UI/hagried.jpg"), TileSize, TileSize, false, true);
-        player2Image = new Image(getClass().getResourceAsStream("/UI/william.jpg"), TileSize, TileSize, false, true);
+
+        try{
+            emptyImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"floor.png"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Custom theme image not found. Using default.");
+            emptyImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"floor.png"), TileSize, TileSize, false, true);
+        }
+        try{
+            IndestructibleWallImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"durable_wall.png"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Custom theme image not found. Using default.");
+            IndestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"durable_wall.png"), TileSize, TileSize, false, true);
+        }
+        try{
+            DestructibleWallImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"destructible_wall.png"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Custom theme image not found. Using default.");
+            DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"destructible_wall.png"), TileSize, TileSize, false, true);
+        }
+        try{
+            player1Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"hagried.jpg"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Custom theme image not found. Using default.");
+            player1Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"hagried.jpg"), TileSize, TileSize, false, true);
+        }
+        try{
+            player2Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"william.jpg"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Custom theme image not found. Using default.");
+            player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"william.jpg"), TileSize, TileSize, false, true);
+        }
 
         Random random = new Random();
 
@@ -429,7 +500,7 @@ public class Game {
                     tileView[nx][ny].setImage(emptyImage);
 
                     // 1 in 5 chance to spawn a random item
-                    if (new Random().nextInt(5) == 0) {
+                    if (new Random().nextInt(1) == 0) {
                         int randomNum = new Random().nextInt(2); //INCREASE THE NEXT INT (X) IF NEW ITEM IMPLEMENTED, AND ADAPT THE SWITCH CASE
                         Gatherable item;
 
@@ -496,13 +567,14 @@ public class Game {
 
     private void updateBombView(Pane root) {
         for (Bomb bomb : bombs) {
-            if (bomb.getImageView() == null) {
-                bomb.setImageView(new ImageView(new Image(getClass().getResourceAsStream("/UI/bomb.png"), TileSize, TileSize, false, true)));
+            if (!bomb.isExists()) {
+                bomb.setImageView(bomb.getImageView());
                 bomb.getImageView().setFitWidth(TileSize);
                 bomb.getImageView().setFitHeight(TileSize);
                 bomb.getImageView().setLayoutX(bomb.getY() * TileSize);
                 bomb.getImageView().setLayoutY(bomb.getX() * TileSize);
                 root.getChildren().add(bomb.getImageView());
+                bomb.setExists(true);
             }
         }
     }
