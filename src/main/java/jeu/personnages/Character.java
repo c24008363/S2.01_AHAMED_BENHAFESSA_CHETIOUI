@@ -3,7 +3,10 @@ package jeu.personnages;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
+import jeu.items.Gatherable;
 import jeu.objets.Bomb;
+
+import java.util.List;
 
 public abstract class Character {
     protected int row;
@@ -13,8 +16,9 @@ public abstract class Character {
     protected int[][] gameMatrix;
     protected int id;
     private ObjectProperty<Image> imageProperty = new SimpleObjectProperty<>();
-    private int bombCount = 5;
+    private int bombCount = 1;
     private boolean isInBomb = false;
+    private int range = 1;
 
 
 
@@ -51,6 +55,8 @@ public abstract class Character {
     public void setY(int y) {
         this.y = y;
     }
+
+    public int getRange() { return range; }
 
     public boolean isInBomb() { return isInBomb;}
 
@@ -111,24 +117,25 @@ public abstract class Character {
             return false;
 
         if (!isInBomb) {
-            return gameMatrix[(x) / TileSize][(y) / TileSize] == 0 //haut gauche
+            return (gameMatrix[(x) / TileSize][(y) / TileSize] == 0 || gameMatrix[(x) / TileSize][(y) / TileSize] == 4) // haut gauche
                     &&
-                    gameMatrix[(x + (TileSize - 5)) / TileSize][(y + (TileSize - 5)) / TileSize] == 0 //bas droite
+                    (gameMatrix[(x + (TileSize - 5)) / TileSize][(y + (TileSize - 5)) / TileSize] == 0 || gameMatrix[(x + (TileSize - 5)) / TileSize][(y + (TileSize - 5)) / TileSize] == 4) // bas droite
                     &&
-                    gameMatrix[((x) + TileSize - 5) / TileSize][(y) / TileSize] == 0 //haut droite
+                    (gameMatrix[((x) + TileSize - 5) / TileSize][(y) / TileSize] == 0 || gameMatrix[((x) + TileSize - 5) / TileSize][(y) / TileSize] == 4) // haut droite
                     &&
-                    gameMatrix[(x) / TileSize][(y + TileSize - 5) / TileSize] == 0; //bas gauche
+                    (gameMatrix[(x) / TileSize][(y + TileSize - 5) / TileSize] == 0 || gameMatrix[(x) / TileSize][(y + TileSize - 5) / TileSize] == 4); // bas gauche
         } else {
-            return (gameMatrix[(x) / TileSize][(y) / TileSize] == 0 || gameMatrix[(x) / TileSize][(y) / TileSize] == 3) //haut gauche
+            return (gameMatrix[(x) / TileSize][(y) / TileSize] == 0 || gameMatrix[(x) / TileSize][(y) / TileSize] >= 3) // haut gauche
                     &&
-                    (gameMatrix[(x + (TileSize - 5)) / TileSize][(y + (TileSize - 5)) / TileSize] == 0 || gameMatrix[(x + (TileSize - 5)) / TileSize][(y + (TileSize - 5)) / TileSize] == 3) //bas droite
+                    (gameMatrix[(x + (TileSize - 5)) / TileSize][(y + (TileSize - 5)) / TileSize] == 0 || gameMatrix[(x + (TileSize - 5)) / TileSize][(y + (TileSize - 5)) / TileSize] >= 3) // bas droite
                     &&
-                    (gameMatrix[((x) + TileSize - 5) / TileSize][(y) / TileSize] == 0 || gameMatrix[((x) + TileSize - 5) / TileSize][(y) / TileSize] == 3) //haut droite
+                    (gameMatrix[((x) + TileSize - 5) / TileSize][(y) / TileSize] == 0 || gameMatrix[((x) + TileSize - 5) / TileSize][(y) / TileSize] >= 3) // haut droite
                     &&
-                    (gameMatrix[(x) / TileSize][(y + TileSize - 5) / TileSize] == 0 || gameMatrix[(x) / TileSize][(y + TileSize - 5) / TileSize] == 3);//bas gauche
-
-
+                    (gameMatrix[(x) / TileSize][(y + TileSize - 5) / TileSize] == 0 || gameMatrix[(x) / TileSize][(y + TileSize - 5) / TileSize] >= 3); // bas gauche
         }
+
+
+
     }
 
 
@@ -153,6 +160,54 @@ public abstract class Character {
         return new Bomb(this.row, this.col, new Image(getClass().getResourceAsStream("/UI/005-bombFace.png"),
                         TileSize, TileSize, false, true), this, 1);
 
+    }
+
+    public Gatherable isOnGatherable(List<Gatherable> gatherables, int TileSize) {
+        int topLeftRow = getY() / TileSize;
+        int topLeftCol = getX() / TileSize;
+
+        int topRightRow = getY() / TileSize;
+        int topRightCol = (getX() + TileSize - 5) / TileSize;
+
+        int bottomLeftRow = (getY() + TileSize - 5) / TileSize;
+        int bottomLeftCol = getX() / TileSize;
+
+        int bottomRightRow = (getY() + TileSize - 5) / TileSize;
+        int bottomRightCol = (getX() + TileSize - 5) / TileSize;
+
+        // Helper function to find gatherable at given tile
+        java.util.function.BiPredicate<Integer, Integer> isGatherableAt = (r, c) -> {
+            for (Gatherable g : gatherables) {
+                if (g.getRow() == r && g.getCol() == c) return true;
+            }
+            return false;
+        };
+
+        if (gameMatrix[topLeftRow][topLeftCol] == 4 && isGatherableAt.test(topLeftRow, topLeftCol)) {
+            for (Gatherable g : gatherables) {
+                if (g.getRow() == topLeftRow && g.getCol() == topLeftCol) return g;
+            }
+        }
+
+        if (gameMatrix[topRightRow][topRightCol] == 4 && isGatherableAt.test(topRightRow, topRightCol)) {
+            for (Gatherable g : gatherables) {
+                if (g.getRow() == topRightRow && g.getCol() == topRightCol) return g;
+            }
+        }
+
+        if (gameMatrix[bottomLeftRow][bottomLeftCol] == 4 && isGatherableAt.test(bottomLeftRow, bottomLeftCol)) {
+            for (Gatherable g : gatherables) {
+                if (g.getRow() == bottomLeftRow && g.getCol() == bottomLeftCol) return g;
+            }
+        }
+
+        if (gameMatrix[bottomRightRow][bottomRightCol] == 4 && isGatherableAt.test(bottomRightRow, bottomRightCol)) {
+            for (Gatherable g : gatherables) {
+                if (g.getRow() == bottomRightRow && g.getCol() == bottomRightCol) return g;
+            }
+        }
+
+        return null;
     }
 
     public int getBombCount() {

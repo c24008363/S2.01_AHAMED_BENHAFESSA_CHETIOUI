@@ -3,6 +3,8 @@ package UI;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import jeu.items.BombUp;
+import jeu.items.Gatherable;
 import jeu.objets.Bomb;
 
 import javafx.scene.image.Image;
@@ -10,6 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import jeu.objets.Explosion;
 import jeu.objets.TimedExplosion;
+import jeu.personnages.Character;
 import jeu.personnages.Player;
 
 import java.util.*;
@@ -33,6 +36,8 @@ public class Game {
     private ImageView player1View;
     private ImageView player2View;
 
+    private Gatherable tempItem;
+
     private int playerSpeed = 0; //The higher the slower
     private int player2Speed = 0;
 
@@ -48,6 +53,8 @@ public class Game {
     private List<Bomb> bombs = new ArrayList<>();
     private List<Explosion> explosions = new ArrayList<>();
     private final List<TimedExplosion> timedExplosions = new ArrayList<>();
+    private List<Gatherable> items = new ArrayList<>();
+
 
     public void setBombs(List<Bomb> bombs) {
         this.bombs = bombs;
@@ -138,7 +145,10 @@ public class Game {
             @Override
             public void handle(long now) {
                 // Skip game logic if game is over
-                if (gameOver) return;
+                if (gameOver) {
+                    explosions.removeAll(timedExplosions);
+                    return;
+                }
 
                 // # -- JOUEUR 1 MOUVEMENT -- #
                 if (playerSpeed == 0 && player1Alive) {
@@ -183,6 +193,24 @@ public class Game {
                 }
 
                 updatePlayerViewsSmooth();
+
+                tempItem = player1.isOnGatherable(items, TileSize);
+                if(tempItem != null){
+                    useItem(tempItem, player1, player2);
+                    gameMatrix[tempItem.getRow()][tempItem.getCol()] = 0;
+
+                    items.remove(tempItem);
+                }
+                tempItem = player2.isOnGatherable(items, TileSize);
+                if(tempItem != null){
+                    useItem(tempItem, player2, player1);
+                    tileView[tempItem.getRow()][tempItem.getCol()].setImage(emptyImage);
+                    gameMatrix[tempItem.getRow()][tempItem.getCol()] = 0;
+                    items.remove(tempItem);
+                }
+                tempItem = null;
+
+
 
                 // Handle bomb explosions
                 List<Bomb> explodedBombs = new ArrayList<>();
@@ -297,6 +325,7 @@ public class Game {
 
     private void restartGame() {
         // Reset game state
+        initGame();
         gameOver = false;
         winner = "";
         player1Alive = true;
@@ -317,40 +346,58 @@ public class Game {
         System.out.println("Game restarted! Press R to restart when game over.");
     }
 
+    private void useItem(Gatherable g, jeu.personnages.Character character, jeu.personnages.Character otherCharacter) {
+        if (g.isBuff()){
+            g.applyEffect(character);
+        }
+        else{
+            g.applyEffect(otherCharacter);
+        }
+    }
+
     private List<Explosion> generateExplosionsFromBomb(Bomb bomb) {
         List<Explosion> explosionList = new ArrayList<>();
         int x = bomb.getX();
         int y = bomb.getY();
-        int range = 3; // Reduced range for better gameplay balance
+        int range = bomb.getCharacter().getRange();
 
-        // Center explosion
         explosionList.add(new Explosion(x, y, 0));
 
-        // Four directions
-        int[][] directions = {
-                {-1, 0}, // up
-                {1, 0},  // down
-                {0, -1}, // left
-                {0, 1}   // right
-        };
+        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
         for (int dir = 0; dir < directions.length; dir++) {
             for (int i = 1; i <= range; i++) {
                 int nx = x + directions[dir][0] * i;
                 int ny = y + directions[dir][1] * i;
 
-                // Stop if out of bounds
                 if (nx < 0 || ny < 0 || nx >= BoardSize || ny >= BoardSize) break;
-
-                // Stop at indestructible walls
                 if (gameMatrix[nx][ny] == 2) break;
 
                 explosionList.add(new Explosion(nx, ny, dir + 1));
 
-                // Stop after hitting destructible wall
                 if (gameMatrix[nx][ny] == 1) {
                     gameMatrix[nx][ny] = 0;
                     tileView[nx][ny].setImage(emptyImage);
+
+                    // 1 in 5 chance to spawn a random item
+                    if (new Random().nextInt(5) == 0) {
+                        int randomNum = new Random().nextInt(1); //INCREASE THE NEXT INT (X) IF NEW ITEM IMPLEMENTED, AND ADAPT THE SWITCH CASE
+                        Gatherable item;
+
+                        switch (randomNum) {
+                            case 0:
+                                item = new BombUp(nx, ny, TileSize);
+                                items.add(item);
+                                break;
+                            default:
+                                item = null; // or handle other cases if needed
+                                break;
+                        }
+
+                        gameMatrix[nx][ny] = 4; // item tile type
+                        tileView[nx][ny].setImage(item.getImageView().getImage());
+                        // You should also store this item somewhere to apply its effect on collision
+                    }
                     break;
                 }
             }
@@ -358,6 +405,7 @@ public class Game {
 
         return explosionList;
     }
+
 
     private boolean isPlayerInExplosion(Player player, int explosionRow, int explosionCol, int tileSize) {
         // Get player's current tile position
