@@ -24,6 +24,7 @@ public class Main2 extends Application {
     private Image imagePlayer = new Image(getClass().getResourceAsStream("/UI/player.png"));
     private Image imagePlayer2 = new Image(getClass().getResourceAsStream("/UI/player2.png"));
 
+
     @Override
     public void start(Stage stage){
         Pane root = new Pane();
@@ -37,8 +38,8 @@ public class Main2 extends Application {
             }
         }
 
-        Player player = new Player(imagePlayer, tileSize, tileSize, tileSize-1, tileSize-1, 150);
-        Player2 player2 = new Player2(imagePlayer2, 13*tileSize, 13*tileSize, tileSize-1, tileSize-1, 150);
+        Player player = new Player(imagePlayer, tileSize, tileSize, tileSize-3, tileSize-3, 150);
+        Player2 player2 = new Player2(imagePlayer2, 13*tileSize, 13*tileSize, tileSize-3, tileSize-3, 150);
         root.getChildren().addAll(player.getRectangle(), player2.getRectangle());
 
         scene.setOnKeyPressed(event -> activeKeys.add(event.getCode()));

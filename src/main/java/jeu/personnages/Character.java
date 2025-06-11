@@ -1,7 +1,9 @@
 package jeu.personnages;
 
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import jeu.objets.Bomb;
 import jeu.terrains.Terrain;
@@ -20,7 +22,7 @@ public abstract class Character {
     private double speed;
 
     private long lastBombTime = 0;
-    private final long bombCooldown = 1000;
+    private final long bombCooldown = 2000;
 
     private Consumer<Bomb> bombPlacer;
 
@@ -96,7 +98,7 @@ public abstract class Character {
         bombX += getRectangle().getWidth()/2;
         bombY += getRectangle().getHeight()/2;
 
-        Bomb bomb = new Bomb(bombX, bombY, map.getTileSize()/2-5, map.getPane());
+        Bomb bomb = new Bomb(bombX, bombY, map.getTileSize()/2-2, map.getPane());
         if (bombPlacer != null) bombPlacer.accept(bomb);
     }
 
