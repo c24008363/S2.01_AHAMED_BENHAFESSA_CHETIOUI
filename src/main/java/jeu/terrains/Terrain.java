@@ -23,15 +23,15 @@ public class Terrain {
             for (int x = 0; x < cols; x++) {
                 TileType type;
 
-                // ✅ Laisse toujours les murs autour
+                // Laisse toujours les murs autour
                 if (y == 0 || y == rows - 1 || x == 0 || x == cols - 1) {
                     type = TileType.WALL;
 
-                    // ✅ Zone de spawn du joueur haut-gauche : (1,1), (1,2), (2,1)
+                    // Zone de spawn du joueur haut-gauche : (1,1), (1,2), (2,1)
                 } else if ((x == 1 && y == 1) || (x == 1 && y == 2) || (x == 2 && y == 1)) {
                     type = TileType.EMPTY;
 
-                    // ✅ Zone de spawn du joueur bas-droite : (cols-2, rows-2), (cols-2, rows-3), (cols-3, rows-2)
+                    // Zone de spawn du joueur bas-droite : (cols-2, rows-2), (cols-2, rows-3), (cols-3, rows-2)
                 } else if ((x == cols - 2 && y == rows - 2) ||
                         (x == cols - 2 && y == rows - 3) ||
                         (x == cols - 3 && y == rows - 2)) {

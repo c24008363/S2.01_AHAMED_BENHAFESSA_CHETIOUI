@@ -98,7 +98,7 @@ public abstract class Character {
         bombX += getRectangle().getWidth()/2;
         bombY += getRectangle().getHeight()/2;
 
-        Bomb bomb = new Bomb(bombX, bombY, map.getTileSize()/2-2, map.getPane());
+        Bomb bomb = new Bomb(bombX, bombY, map.getTileSize()/2-2, map.getPane(), map);
         if (bombPlacer != null) bombPlacer.accept(bomb);
     }
 

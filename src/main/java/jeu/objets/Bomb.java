@@ -8,13 +8,16 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import jeu.terrains.Terrain;
+import jeu.terrains.Tile;
+import jeu.terrains.TileType;
 
 public class Bomb {
     private final Circle view;
-    private final int explosionRange = 2;
+    private final int explosionRange = 1;
     private final double tileSize = 40;
 
-    public Bomb(double x, double y, double radius, Pane parent){
+    public Bomb(double x, double y, double radius, Pane parent, Terrain map){
         view = new Circle(radius);
         view.setCenterX(x);
         view.setCenterY(y);
@@ -28,7 +31,7 @@ public class Bomb {
         PauseTransition timer = new PauseTransition(Duration.seconds(2));
         timer.setOnFinished(event -> {
             parent.getChildren().remove(view);
-            explode(parent, x, y);
+            explode(parent, x, y, map);
         });
         timer.play();
     }
@@ -37,24 +40,55 @@ public class Bomb {
         return view;
     }
 
-    private void explode(Pane parent, double centerX, double centerY){
-        // Centre de l'explosion
-        addExplosionTile(parent, centerX, centerY);
+    private void explode(Pane parent, double centerX, double centerY, Terrain map){
+        int col = (int) (centerX / tileSize);
+        int row = (int) (centerY / tileSize);
+
+        addExplosionTile(parent, col, row, map);
 
         // direction -> haut, bas, gauche, droite
-        for (int i = 0; i <= explosionRange; i++){
-            addExplosionTile(parent, centerX+i * tileSize, centerY); // droite
-            addExplosionTile(parent, centerX-i * tileSize, centerY); // gauche
-            addExplosionTile(parent, centerX, centerY - i * tileSize); // haut
-            addExplosionTile(parent, centerX, centerY + i * tileSize); // bas
+        spreadExplosion(parent, col, row, map, 1, 0); //droite
+        spreadExplosion(parent, col, row, map, -1, 0); // gauche
+        spreadExplosion(parent, col, row, map, 0, -1); // haut
+        spreadExplosion(parent, col, row, map, 0, 1); // bas
+    }
+
+    private void spreadExplosion(Pane parent, int col, int row, Terrain map, int dx, int dy){
+        for (int i = 1; i <= explosionRange; i++){
+            int newCol = col + dx * i;
+            int newRow = row + dy * i;
+
+            if (newCol < 0 || newRow < 0 || newCol >= map.getGrid()[0].length || newRow >= map.getGrid().length){
+                return;
+            }
+
+            Tile tile = map.getGrid()[newRow][newCol];
+
+            if (tile.getType() == TileType.WALL){
+                return;
+            }
+
+            addExplosionTile(parent, newCol, newRow, map);
+
+            if (tile.getType() == TileType.DESTRUCTIBLE){
+                map.getGrid()[newRow][newCol] = new Tile(TileType.EMPTY, tileSize, newCol * tileSize, newRow * tileSize);
+                parent.getChildren().remove(tile.getView());
+                parent.getChildren().add(0, map.getGrid()[newRow][newCol].getView());
+                return;
+            }
         }
     }
 
-    private void addExplosionTile(Pane parent, double x, double y){
-        Rectangle flame = new Rectangle(x, y, tileSize-2, tileSize-2);
-        flame.setX(x-tileSize/2);
-        flame.setY(y-tileSize/2);
-        flame.setFill(Color.ORANGE);//mettre une image ici
+    private void addExplosionTile(Pane parent, int col, int row, Terrain map){
+
+        double x = col * tileSize;
+        double y = row * tileSize;
+
+        Image imageExplosion = new Image(getClass().getResourceAsStream("/UI/explosion.png"));
+        Rectangle flame = new Rectangle(tileSize, tileSize);
+        flame.setX(x);
+        flame.setY(y);
+        flame.setFill(new ImagePattern(imageExplosion));//mettre une image ici
 
         parent.getChildren().add(flame);
 
