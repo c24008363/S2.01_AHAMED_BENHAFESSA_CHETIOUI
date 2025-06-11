@@ -11,7 +11,7 @@ import javafx.util.Duration;
 
 public class Bomb {
     private final Circle view;
-    private final int explosionRange = 1;
+    private final int explosionRange = 2;
     private final double tileSize = 40;
 
     public Bomb(double x, double y, double radius, Pane parent){
@@ -26,7 +26,10 @@ public class Bomb {
         //parent.getChildren().add(view);
 
         PauseTransition timer = new PauseTransition(Duration.seconds(2));
-        timer.setOnFinished(event -> parent.getChildren().remove(view));
+        timer.setOnFinished(event -> {
+            parent.getChildren().remove(view);
+            explode(parent, x, y);
+        });
         timer.play();
     }
 
