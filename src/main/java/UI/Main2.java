@@ -20,6 +20,8 @@ public class Main2 extends Application {
     private long lastUpdate = -1;
 
     private double tileSize = 40;
+    private int col = 15;
+    private int row = 15;
 
     private Image imagePlayer = new Image(getClass().getResourceAsStream("/UI/player.png"));
     private Image imagePlayer2 = new Image(getClass().getResourceAsStream("/UI/player2.png"));
@@ -30,7 +32,7 @@ public class Main2 extends Application {
         Pane root = new Pane();
         Scene scene = new Scene(root);
 
-        Terrain map = new Terrain(15, 15, tileSize);
+        Terrain map = new Terrain(col, row, tileSize);
         map.setPane(root);
         for (Tile[] row : map.getGrid()) {
             for (Tile tile : row){
@@ -39,7 +41,7 @@ public class Main2 extends Application {
         }
 
         Player player = new Player(imagePlayer, tileSize, tileSize, tileSize-3, tileSize-3, 150);
-        Player2 player2 = new Player2(imagePlayer2, 13*tileSize, 13*tileSize, tileSize-3, tileSize-3, 150);
+        Player2 player2 = new Player2(imagePlayer2, (col-2)*tileSize, (row-2)*tileSize, tileSize-3, tileSize-3, 150);
         root.getChildren().addAll(player.getRectangle(), player2.getRectangle());
 
         scene.setOnKeyPressed(event -> activeKeys.add(event.getCode()));
@@ -69,6 +71,7 @@ public class Main2 extends Application {
 
 
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
 }

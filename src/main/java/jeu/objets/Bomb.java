@@ -14,7 +14,7 @@ import jeu.terrains.TileType;
 
 public class Bomb {
     private final Circle view;
-    private final int explosionRange = 1;
+    private final int explosionRange = 2;
     private final double tileSize = 40;
 
     public Bomb(double x, double y, double radius, Pane parent, Terrain map){
@@ -59,22 +59,24 @@ public class Bomb {
             int newRow = row + dy * i;
 
             if (newCol < 0 || newRow < 0 || newCol >= map.getGrid()[0].length || newRow >= map.getGrid().length){
-                return;
+                break;
             }
 
             Tile tile = map.getGrid()[newRow][newCol];
 
             if (tile.getType() == TileType.WALL){
-                return;
+                break;
             }
 
             addExplosionTile(parent, newCol, newRow, map);
 
-            if (tile.getType() == TileType.DESTRUCTIBLE){
+            int counterRangeExplosion = 0;
+            while (tile.getType() == TileType.DESTRUCTIBLE && counterRangeExplosion <= explosionRange){
                 map.getGrid()[newRow][newCol] = new Tile(TileType.EMPTY, tileSize, newCol * tileSize, newRow * tileSize);
                 parent.getChildren().remove(tile.getView());
                 parent.getChildren().add(0, map.getGrid()[newRow][newCol].getView());
-                return;
+                counterRangeExplosion++;
+                break;
             }
         }
     }
