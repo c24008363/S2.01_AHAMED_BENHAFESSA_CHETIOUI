@@ -4,6 +4,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import jeu.items.BombUp;
+import jeu.items.FlameUp;
 import jeu.items.Gatherable;
 import jeu.objets.Bomb;
 
@@ -380,13 +381,17 @@ public class Game {
                     tileView[nx][ny].setImage(emptyImage);
 
                     // 1 in 5 chance to spawn a random item
-                    if (new Random().nextInt(5) == 0) {
-                        int randomNum = new Random().nextInt(1); //INCREASE THE NEXT INT (X) IF NEW ITEM IMPLEMENTED, AND ADAPT THE SWITCH CASE
+                    if (new Random().nextInt(1) == 0) {
+                        int randomNum = new Random().nextInt(2); //INCREASE THE NEXT INT (X) IF NEW ITEM IMPLEMENTED, AND ADAPT THE SWITCH CASE
                         Gatherable item;
 
                         switch (randomNum) {
                             case 0:
                                 item = new BombUp(nx, ny, TileSize);
+                                items.add(item);
+                                break;
+                            case 1:
+                                item = new FlameUp(nx, ny, TileSize);
                                 items.add(item);
                                 break;
                             default:

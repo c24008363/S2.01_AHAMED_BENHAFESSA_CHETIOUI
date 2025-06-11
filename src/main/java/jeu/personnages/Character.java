@@ -58,6 +58,8 @@ public abstract class Character {
 
     public int getRange() { return range; }
 
+    public void setRange(int range) { this.range = range; }
+
     public boolean isInBomb() { return isInBomb;}
 
     public void setInBomb(boolean inBomb) { isInBomb = inBomb;}
