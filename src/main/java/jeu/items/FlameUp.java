@@ -5,7 +5,7 @@ import jeu.personnages.Character;
 
 public class FlameUp extends Gatherable {
     public FlameUp(int row, int col, int tileSize) {
-        super(row, col, tileSize, new Image(BombUp.class.getResourceAsStream("/UI/014-bonus_flame.png")));
+        super(row, col, tileSize, new Image(BombUp.class.getResourceAsStream("/UI/bonus_flame.png")));
     }
 
     @Override

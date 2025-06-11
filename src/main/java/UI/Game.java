@@ -96,9 +96,9 @@ public class Game {
 
     private void initGame() {
         // Load images
-        emptyImage = new Image(getClass().getResourceAsStream("/UI/000-floor.png"), TileSize, TileSize, false, true);
-        IndestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/001-durable_wall.png"), TileSize, TileSize, false, true);
-        DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/002-destructible_wall.png"), TileSize, TileSize, false, true);
+        emptyImage = new Image(getClass().getResourceAsStream("/UI/floor.png"), TileSize, TileSize, false, true);
+        IndestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/durable_wall.png"), TileSize, TileSize, false, true);
+        DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/destructible_wall.png"), TileSize, TileSize, false, true);
         player1Image = new Image(getClass().getResourceAsStream("/UI/hagried.jpg"), TileSize, TileSize, false, true);
         player2Image = new Image(getClass().getResourceAsStream("/UI/william.jpg"), TileSize, TileSize, false, true);
 
@@ -300,9 +300,9 @@ public class Game {
     }
 
     public void initGameRestart(){
-        emptyImage = new Image(getClass().getResourceAsStream("/UI/000-floor.png"), TileSize, TileSize, false, true);
-        IndestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/001-durable_wall.png"), TileSize, TileSize, false, true);
-        DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/002-destructible_wall.png"), TileSize, TileSize, false, true);
+        emptyImage = new Image(getClass().getResourceAsStream("/UI/floor.png"), TileSize, TileSize, false, true);
+        IndestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/durable_wall.png"), TileSize, TileSize, false, true);
+        DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/destructible_wall.png"), TileSize, TileSize, false, true);
         player1Image = new Image(getClass().getResourceAsStream("/UI/hagried.jpg"), TileSize, TileSize, false, true);
         player2Image = new Image(getClass().getResourceAsStream("/UI/william.jpg"), TileSize, TileSize, false, true);
 

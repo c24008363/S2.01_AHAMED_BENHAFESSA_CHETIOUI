@@ -159,7 +159,7 @@ public abstract class Character {
 
     public Bomb placeBomb(int TileSize){
         bombCount = bombCount -1;
-        return new Bomb(this.row, this.col, new Image(getClass().getResourceAsStream("/UI/005-bombFace.png"),
+        return new Bomb(this.row, this.col, new Image(getClass().getResourceAsStream("/UI/bombFace.png"),
                         TileSize, TileSize, false, true), this, 1);
 
     }
