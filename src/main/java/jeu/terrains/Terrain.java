@@ -43,7 +43,7 @@ public class Terrain {
 
                     // Le reste : 50% destructible, 50% vide
                 } else {
-                    type = Math.random() < 0.5 ? TileType.DESTRUCTIBLE : TileType.EMPTY;
+                    type = Math.random() < 0.7 ? TileType.DESTRUCTIBLE : TileType.EMPTY;
                 }
 
                 grid[y][x] = new Tile(type, tileSize, x * tileSize, y * tileSize);
