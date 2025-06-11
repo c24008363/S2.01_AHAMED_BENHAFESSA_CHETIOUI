@@ -51,6 +51,9 @@ public class Game {
     private boolean player1Alive = true;
     private boolean player2Alive = true;
 
+    private PlayerStats playerStats1;
+    private PlayerStats playerStats2;
+
     private List<Bomb> bombs = new ArrayList<>();
     private List<Explosion> explosions = new ArrayList<>();
     private final List<TimedExplosion> timedExplosions = new ArrayList<>();
@@ -136,6 +139,12 @@ public class Game {
             System.err.println("Custom theme image not found. Using default.");
             player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player2.jpg"), TileSize, TileSize, false, true);
         }
+
+        //MainMenu.getStats1().incrementGamesPlayed();
+        //MainMenu.getStats2().incrementGamesPlayed();
+
+
+
 
         Random random = new Random();
 

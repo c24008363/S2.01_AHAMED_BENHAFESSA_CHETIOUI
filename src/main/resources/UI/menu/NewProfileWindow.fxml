@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="UI.controller.NewProfileController"
+      spacing="15" alignment="CENTER" prefWidth="300" prefHeight="150">
+
+    <TextField fx:id="profileNameField" promptText="Enter profile name"/>
+    <Button text="Confirm" onAction="#handleConfirm"/>
+</VBox>

@@ -14,6 +14,7 @@
             styleClass="stack-pane">
     <VBox spacing="10" alignment="CENTER">
         <Button text="Jouer" onAction="#handlePlayButton" styleClass="menu-button"/>
+        <Button text="Profils" onAction="#handleProfilesClick" styleClass="menu-button"/>
         <Button text="Option" onAction="#handleOptionsClick" styleClass="menu-button"/>
         <Button text="Quitter" onAction="#handleQuitButton" styleClass="menu-button"/>
     </VBox>

@@ -35,4 +35,21 @@ public class MenuController {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    private void handleProfilesClick() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/UI/menu/ProfileWindow.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Profiles");
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import jeu.personnages.Player;
 
 import java.io.IOException;
 
@@ -16,6 +17,11 @@ public class MainMenu extends Application {
     private static String theme;
     private static int tileSize = 40;
     private static int boardSize = 17;
+    private static String player1 = "";
+    private static String player2 = "";
+    private static PlayerStats stats1;
+    private static PlayerStats stats2;
+
 
     public static int getBoardSize() {
         return boardSize;
@@ -41,7 +47,41 @@ public class MainMenu extends Application {
         MainMenu.theme = theme;
     }
 
+    public static PlayerStats getStats1() {
+        return stats1;
+    }
+
+    public static  void setStats1(PlayerStats stats1new) {
+        stats1 = stats1new;
+    }
+
+    public static  PlayerStats getStats2() {
+        return stats2;
+    }
+
+    public static  void setStats2(PlayerStats stats2new) {
+        stats2 = stats2new;
+    }
+
+
     private Game main =  new Game();
+
+    public static String getPlayer2() {
+        return player2;
+    }
+
+    public static void setPlayer2(String player2) {
+        MainMenu.player2 = player2;
+    }
+
+    public static String getPlayer1() {
+        return player1;
+    }
+
+    public static void setPlayer1(String player1) {
+        MainMenu.player1 = player1;
+    }
+
     @Override
     public void start(Stage primaryStage) throws IOException {
         this.primaryStage = primaryStage;
@@ -69,6 +109,12 @@ public class MainMenu extends Application {
         System.out.print(boardSize + "   ");
         System.out.println(tileSize);
         System.out.println(theme);
+        System.out.println(player1);
+        System.out.println(player2);
+
+        stats1 = new PlayerStats("/resources/profiles/"+player1);
+        stats2 = new PlayerStats("/resources/profiles/"+player2);
+
         menuScene.setRoot(main.getRoot());
         primaryStage.sizeToScene();
         main.attachKeyHandlers(menuScene);
