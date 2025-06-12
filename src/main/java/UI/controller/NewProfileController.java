@@ -9,9 +9,6 @@ import javafx.event.ActionEvent;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Paths;
 
 public class NewProfileController {
 
@@ -28,14 +25,9 @@ public class NewProfileController {
         }
 
         try {
-            // Get path to profiles folder (only works in development, not in a packaged JAR)
-            URL folderUrl = getClass().getResource("/profiles");
-            if (folderUrl == null || !folderUrl.getProtocol().equals("file")) {
-                showAlert("Error", "Cannot access profiles directory. Not supported in packaged JAR.");
-                return;
-            }
+            String userHome = System.getProperty("user.home");
+            File profilesDir = new File(userHome, "BombermanProfiles");
 
-            File profilesDir = Paths.get(folderUrl.toURI()).toFile();
             if (!profilesDir.exists()) {
                 profilesDir.mkdirs();
             }

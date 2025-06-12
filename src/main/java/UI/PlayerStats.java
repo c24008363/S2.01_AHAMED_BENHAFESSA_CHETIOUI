@@ -4,10 +4,10 @@ import java.io.*;
 import java.util.*;
 
 public class PlayerStats {
-    private int gamesPlayed;
-    private int gamesWon;
-    private int blocksDestroyed;
-    private int itemsCollected;
+    private int gamesPlayed = 0;
+    private int gamesWon = 0;
+    private int blocksDestroyed = 0;
+    private int itemsCollected = 0;
 
     private final String filePath;
 

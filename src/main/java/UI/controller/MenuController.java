@@ -16,6 +16,20 @@ public class MenuController {
 
     @FXML
     private void handlePlayButton(){
+
+        try {
+            MainMenu.getStats1().incrementGamesPlayed();
+        }
+        catch (Exception e) {
+            System.err.println("No profile loaded for player 1");
+        }
+        try {
+            MainMenu.getStats2().incrementGamesPlayed();
+        }
+        catch (Exception e) {
+            System.err.println("No profile loaded for player 2");
+        }
+
         mainMenu.launchGame();
     }
     @FXML

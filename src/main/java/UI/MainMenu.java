@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import jeu.personnages.Player;
 
+import java.io.File;
 import java.io.IOException;
 
 public class MainMenu extends Application {
@@ -112,8 +113,24 @@ public class MainMenu extends Application {
         System.out.println(player1);
         System.out.println(player2);
 
-        stats1 = new PlayerStats("/resources/profiles/"+player1);
-        stats2 = new PlayerStats("/resources/profiles/"+player2);
+        String userHome = System.getProperty("user.home");
+        String basePath = userHome + File.separator + "BombermanProfiles" + File.separator;
+
+        stats1 = new PlayerStats(basePath + player1 + ".txt");
+        stats2 = new PlayerStats(basePath + player2 + ".txt");
+
+        try {
+            MainMenu.getStats1().incrementGamesPlayed();
+        }
+        catch (Exception e) {
+            System.err.println("No profile loaded for player 1");
+        }
+        try {
+            MainMenu.getStats2().incrementGamesPlayed();
+        }
+        catch (Exception e) {
+            System.err.println("No profile loaded for player 2");
+        }
 
         menuScene.setRoot(main.getRoot());
         primaryStage.sizeToScene();

@@ -140,11 +140,6 @@ public class Game {
             player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player2.jpg"), TileSize, TileSize, false, true);
         }
 
-        if (MainMenu.getStats1()!=null) {
-            MainMenu.getStats1().incrementGamesPlayed();
-            MainMenu.getStats2().incrementGamesPlayed();
-        }
-
 
 
 
@@ -243,7 +238,13 @@ public class Game {
 
                 tempItem = player1.isOnGatherable(items, TileSize);
                 if(tempItem != null){
-                    MainMenu.getStats1().incrementItemsCollected();
+                    try {
+                        MainMenu.getStats1().incrementItemsCollected();
+                    }
+                    catch (Exception e) {
+                        System.err.println("No profile loaded for player 1");
+                    }
+
                     useItem(tempItem, player1, player2);
                     tileView[tempItem.getRow()][tempItem.getCol()].setImage(emptyImage);
                     gameMatrix[tempItem.getRow()][tempItem.getCol()] = 0;
@@ -251,7 +252,12 @@ public class Game {
                 }
                 tempItem = player2.isOnGatherable(items, TileSize);
                 if(tempItem != null){
-                    MainMenu.getStats2().incrementItemsCollected();
+                    try {
+                        MainMenu.getStats2().incrementItemsCollected();
+                    }
+                    catch (Exception e) {
+                        System.err.println("No profile loaded for player 2");
+                    }
                     useItem(tempItem, player2, player1);
                     tileView[tempItem.getRow()][tempItem.getCol()].setImage(emptyImage);
                     gameMatrix[tempItem.getRow()][tempItem.getCol()] = 0;
@@ -391,10 +397,17 @@ public class Game {
             System.err.println("Custom theme image not found. Using default.");
             player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player2.jpg"), TileSize, TileSize, false, true);
         }
-
-        if (MainMenu.getStats1()!=null) {
+        try {
             MainMenu.getStats1().incrementGamesPlayed();
+        }
+        catch (Exception e) {
+            System.err.println("No profile loaded for player 1");
+        }
+        try {
             MainMenu.getStats2().incrementGamesPlayed();
+        }
+        catch (Exception e) {
+            System.err.println("No profile loaded for player 2");
         }
 
         Random random = new Random();
@@ -441,8 +454,18 @@ public class Game {
     private void endGame(String winner) {
         this.gameOver = true;
         this.winner = winner;
-        MainMenu.getStats1().save();
-        MainMenu.getStats2().save();
+        try {
+            MainMenu.getStats1().save();
+        }
+        catch (Exception e) {
+            System.err.println("No profile loaded for player 1");
+        }
+        try {
+            MainMenu.getStats2().save();
+        }
+        catch (Exception e) {
+            System.err.println("No profile loaded for player 2");
+        }
         System.out.println("Game Over! Winner: " + winner);
 
         // You can add more end game logic here:
@@ -521,16 +544,27 @@ public class Game {
                     gameMatrix[nx][ny] = 0;
                     if (player1!=null) {
                         if (bomb.getCharacter() == player1) {
-                            MainMenu.getStats1().incrementBlocksDestroyed();
+                            try {
+                                MainMenu.getStats1().incrementBlocksDestroyed();
+                            }
+                            catch (Exception e) {
+                                System.err.println("No profile loaded for player 1");
+                            }
+
                         }
                         else {
-                            MainMenu.getStats2().incrementBlocksDestroyed();
+                            try {
+                                MainMenu.getStats2().incrementBlocksDestroyed();
+                            }
+                            catch (Exception e) {
+                                System.err.println("No profile loaded for player 2");
+                            }
                         }
                     }
                     tileView[nx][ny].setImage(emptyImage);
 
                     // 1 in 5 chance to spawn a random item
-                    if (new Random().nextInt(1) == 0) {
+                    if (new Random().nextInt(5) == 0) {
                         int randomNum = new Random().nextInt(2); //INCREASE THE NEXT INT (X) IF NEW ITEM IMPLEMENTED, AND ADAPT THE SWITCH CASE
                         Gatherable item;
 
