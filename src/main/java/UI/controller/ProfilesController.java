@@ -13,6 +13,11 @@ import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Controller class for the profile selection window.
+ * Allows the user to choose existing profiles for Player 1 and Player 2,
+ * or create a new profile if needed.
+ */
 public class ProfilesController {
 
     @FXML
@@ -21,6 +26,10 @@ public class ProfilesController {
     @FXML
     private ComboBox<String> comboBox2;
 
+    /**
+     * Initializes the controller after FXML loading.
+     * Populates both ComboBoxes with available profile names from disk.
+     */
     @FXML
     public void initialize() {
         List<String> profileNames = loadProfileNames();
@@ -29,6 +38,12 @@ public class ProfilesController {
         comboBox2.getItems().addAll(profileNames);
     }
 
+    /**
+     * Loads profile names from the user's BombermanProfiles directory.
+     * Only files with a <code>.txt</code> extension are considered valid profiles.
+     *
+     * @return a list of profile names without the <code>.txt</code> extension
+     */
     private List<String> loadProfileNames() {
         List<String> profileList = new ArrayList<>();
 
@@ -53,6 +68,10 @@ public class ProfilesController {
         return profileList;
     }
 
+    /**
+     * Handles the confirm button click.
+     * Sets the selected profiles in the {@link MainMenu}, and closes the window.
+     */
     @FXML
     private void handleConfirm() {
         String choice1 = comboBox1.getValue();
@@ -72,6 +91,12 @@ public class ProfilesController {
         comboBox1.getScene().getWindow().hide();
     }
 
+    /**
+     * Handles the cancel button click.
+     * Opens a new window that allows the user to create a new profile.
+     *
+     * @param event the ActionEvent triggered by the cancel button
+     */
     @FXML
     private void handleCancel(ActionEvent event) {
         try {

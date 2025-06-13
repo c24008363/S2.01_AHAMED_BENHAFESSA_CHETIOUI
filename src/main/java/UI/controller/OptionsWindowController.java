@@ -9,6 +9,11 @@ import java.io.File;
 import java.net.URL;
 import java.util.Objects;
 
+/**
+ * Controller class for the Options window.
+ * Allows the user to configure board size, tile size, and choose a visual theme.
+ * Values are validated and passed directly to the {@link MainMenu}.
+ */
 public class OptionsWindowController {
 
     @FXML private TextField BoardSizeField;
@@ -16,6 +21,11 @@ public class OptionsWindowController {
     @FXML private ComboBox<String> themeComboBox;
 
 
+    /**
+     * Initializes the controller after the FXML fields are injected.
+     * Sets default values and input validation for board and tile size,
+     * and populates the theme combo box.
+     */
     @FXML
     public void initialize() {
         BoardSizeField.setText("15");
@@ -25,6 +35,14 @@ public class OptionsWindowController {
         populateThemeComboBox();
     }
 
+    /**
+     * Binds both text fields with the board size and the tile size (in px) both have a max cap.
+     * Updates the corresponding setting in {@link MainMenu} based on the field ID.
+     *
+     * @param textField the TextField to restrict
+     * @param maxValue  the maximum allowable value
+     * @param id        the identifier for the setting (1 = board size, 2 = tile size)
+     */
     private void setupIntegerValueCappedField(TextField textField, int maxValue, int id) { //Allow the player to input only ints and a max value in BoardSize and TileSize.
         textField.textProperty().addListener((obs, oldText, newText) -> {
             StringBuilder filtered = new StringBuilder();
@@ -61,6 +79,12 @@ public class OptionsWindowController {
         });
     }
 
+
+    /**
+     * Populates the theme selection ComboBox with directory names found
+     * in the <code>/UI/themes</code> resource folder.
+     * Sets the default theme and listens for changes to update the theme in {@link MainMenu}.
+     */
     private void populateThemeComboBox() {
         try {
             URL url = getClass().getResource("/UI/themes");

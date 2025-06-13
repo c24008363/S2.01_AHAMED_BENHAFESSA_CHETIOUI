@@ -10,11 +10,23 @@ import javafx.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
 
+/**
+ * Controller class for the New Profile creation window.
+ * Handles user input to create a new player profile file and ensures
+ * no duplicate profile names exist.
+ */
 public class NewProfileController {
 
     @FXML
     private TextField profileNameField;
 
+    /**
+     * Handles the confirmation action when the user submits a new profile name.
+     * Creates a new profile file in the user's home directory under "BombermanProfiles".
+     * The file contains four lines initialized to 0 (for stats).
+     *
+     * @param event the action event triggered by the confirm button
+     */
     @FXML
     private void handleConfirm(ActionEvent event) {
         String profileName = profileNameField.getText().trim();
@@ -57,6 +69,12 @@ public class NewProfileController {
         }
     }
 
+    /**
+     * Displays a warning alert with the given title and content.
+     *
+     * @param title   the title of the alert dialog
+     * @param content the main message/content of the alert
+     */
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);

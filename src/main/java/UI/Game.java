@@ -18,59 +18,156 @@ import jeu.personnages.Player;
 
 import java.util.*;
 
+/**
+ * Core game class that manages the entire game loop, including the game board,
+ * players, items, bombs, and game state.
+ *
+ * <p>This class handles initialization and runtime behavior for a Bomberman-style game.
+ * It maintains the grid layout, user input, collisions, bomb placement and explosion timing,
+ * and win condition logic.</p>
+ *
+ * <p>Game Matrix Encoding:
+ * <ul>
+ *     <li>0 - Empty tile</li>
+ *     <li>1 - Destructible wall</li>
+ *     <li>2 - Indestructible wall</li>
+ *     <li>3 - Bomb</li>
+ *     <li>4 - Item</li>
+ * </ul>
+ * </p>
+ */
 public class Game {
 
-    //Params chosen in the option window
+    /** Size of the game board in tiles (width and height). */
     private static int BoardSize = 20;
+
+    /** Pixel size of each tile. */
     private static int TileSize = 40;
 
-    //Game board
-    private int[][] gameMatrix = new int[BoardSize][BoardSize];
-    private ImageView[][] tileView = new ImageView[BoardSize][BoardSize];
-    private Pane root = new Pane();
+    // ===================== Game Board =====================
 
-    //Images
+    /** Integer matrix representing the tile state of the board. */
+    private final int[][] gameMatrix = new int[BoardSize][BoardSize];
+
+    /** Visual representation of the board tiles using ImageViews. */
+    private final ImageView[][] tileView = new ImageView[BoardSize][BoardSize];
+
+    /** Root pane that holds all game visual elements. */
+    private final Pane root = new Pane();
+
+    // ===================== Tile Images =====================
+
+    /** Image for empty tiles. */
     private Image emptyImage;
+
+    /** Image for destructible walls. */
     private Image DestructibleWallImage;
+
+    /** Image for indestructible walls. */
     private Image IndestructibleWallImage;
+
+    /** Player 1 sprite image. */
     private Image player1Image;
+
+    /** Player 2 sprite image. */
     private Image player2Image;
 
-    //Players
+    // ===================== Players =====================
+
+    /** Player 1 object instance. */
     private Player player1;
+
+    /** Player 2 object instance. */
     private Player player2;
-    private int playerSpeed = 0; //The higher, the slower: defines the amount of frame a player will not move after moving.
-    private int player2Speed = 0;
+
+    /** Player 1 sprite on screen. */
     private ImageView player1View;
+
+    /** Player 2 sprite on screen. */
     private ImageView player2View;
 
-    //Inputs
-    private boolean player1BombPressed = false;
-    private boolean player2BombPressed = false;
+    /**
+     * Delay in frames after which player 1 can move again.
+     * The higher the value, the slower the player.
+     */
+    private int playerSpeed = 0;
+
+    /**
+     * Delay in frames after which player 2 can move again.
+     * The higher the value, the slower the player.
+     */
+    private int player2Speed = 0;
+
+    // ===================== Input Handling =====================
+
+    /** Tracks currently pressed keys. */
     private final Set<KeyCode> activeKeys = new HashSet<>();
 
-    // Game state variables
+    /** Whether player 1 is currently attempting to place a bomb. */
+    private boolean player1BombPressed = false;
+
+    /** Whether player 2 is currently attempting to place a bomb. */
+    private boolean player2BombPressed = false;
+
+    // ===================== Game State =====================
+
+    /** True if the game has ended. */
     private boolean gameOver = false;
+
+    /** Winner identifier, used for display purposes. */
     private String winner = "";
+
+    /** Status flag for player 1's life. */
     private boolean player1Alive = true;
+
+    /** Status flag for player 2's life. */
     private boolean player2Alive = true;
 
-    //Bombs
-    private List<Bomb> bombs = new ArrayList<>();
-    private List<Explosion> explosions = new ArrayList<>();
+    // ===================== Bombs and Explosions =====================
+
+    /** List of all active bombs on the field. */
+    private final List<Bomb> bombs = new ArrayList<>();
+
+    /** List of all active explosions (for rendering and collision). */
+    private final List<Explosion> explosions = new ArrayList<>();
+
+    /**
+     * List of timed explosions managing the duration of each explosion.
+     * Each TimedExplosion tracks how long its associated explosion will remain active.
+     */
     private final List<TimedExplosion> timedExplosions = new ArrayList<>();
 
-    //Items
-    private List<Gatherable> items = new ArrayList<>();
+    // ===================== Items =====================
+
+    /** List of collectible items currently active in the game. */
+    private final List<Gatherable> items = new ArrayList<>();
+
+    /**
+     * Temporary holder for an item a player is interacting with.
+     * When a player steps on an item, it's stored here for processing,
+     * then removed from {@code items}.
+     */
     private Gatherable tempItem;
 
 
 
 
+    /**
+     * Creates a new Game instance with default settings.
+     * Initializes the game board, players, and game loop.
+     */
     public Game() {
         initGame();
     }
 
+    /**
+     * Creates a new Game instance with specified board size and tile size.
+     * Ensures the board size is odd by incrementing if an even number is provided.
+     * Initializes the game board, players, and game loop.
+     *
+     * @param BoardsSize the desired size of the game board (must be an odd number)
+     * @param TileSize the size in pixels of each tile on the board
+     */
     public Game(int BoardsSize, int TileSize) {
         if (BoardsSize % 2 == 0) {
             this.BoardSize = BoardsSize + 1;
@@ -82,10 +179,20 @@ public class Game {
         initGame();
     }
 
+    /**
+     * Returns the size of the game board (number of tiles per side).
+     *
+     * @return the board size
+     */
     public int getBoardSize() {
         return BoardSize;
     }
 
+    /**
+     * Returns the size of each tile in pixels.
+     *
+     * @return the tile size
+     */
     public int getTileSize() {
         return TileSize;
     }
@@ -98,48 +205,22 @@ public class Game {
 
 
 
+    /**
+     * Initializes the game board, players, images, and starts the main game loop.
+     *
+     * <p>The game matrix is populated with walls, destructible blocks, and empty spaces.
+     * Player positions and images are initialized. An AnimationTimer is started to handle
+     * player movement, bomb placement and explosions, item pickups, and game state updates.
+     *
+     * <p>Key controls:
+     * <ul>
+     *   <li>Player 1: Z, Q, S, D to move; E to place bomb</li>
+     *   <li>Player 2: I, J, K, L to move; O to place bomb</li>
+     * </ul>
+     */
     private void initGame() {
         // Load images
-        try{
-            emptyImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"floor.png"), TileSize, TileSize, false, true);
-        }
-        catch (Exception e) {
-            // Fallback to default
-            System.err.println("Custom theme image not found. Using default.");
-            emptyImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"floor.png"), TileSize, TileSize, false, true);
-        }
-        try{
-            IndestructibleWallImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"durable_wall.png"), TileSize, TileSize, false, true);
-        }
-        catch (Exception e) {
-            // Fallback to default
-            System.err.println("Custom theme image not found. Using default.");
-            IndestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"durable_wall.png"), TileSize, TileSize, false, true);
-        }
-        try{
-            DestructibleWallImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"destructible_wall.png"), TileSize, TileSize, false, true);
-        }
-        catch (Exception e) {
-            // Fallback to default
-            System.err.println("Custom theme image not found. Using default.");
-            DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"destructible_wall.png"), TileSize, TileSize, false, true);
-        }
-        try{
-            player1Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"player1.jpg"), TileSize, TileSize, false, true);
-        }
-        catch (Exception e) {
-            // Fallback to default
-            System.err.println("Custom theme image not found. Using default.");
-            player1Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player1.jpg"), TileSize, TileSize, false, true);
-        }
-        try{
-            player2Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"player2.jpg"), TileSize, TileSize, false, true);
-        }
-        catch (Exception e) {
-            // Fallback to default
-            System.err.println("Custom theme image not found. Using default.");
-            player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player2.jpg"), TileSize, TileSize, false, true);
-        }
+        loadImagesAndProfiles();
 
 
 
@@ -313,60 +394,17 @@ public class Game {
 
     // #--- INIT GAME BUT WHEN YOU RESTART TO AVOID ISSUES ---#
 
+    /**
+     * Initializes or resets the game board and players without restarting the game loop.
+     * This method is intended for resetting the board state when restarting the game
+     * to avoid re-creating the animation timer or other resources.
+     *
+     * <p>Like {@link #initGame()}, it creates the matrix of walls and blocks, and resets player positions and views.
+     * However, it does not start the game loop timer.
+     */
     public void initGameRestart(){
 
-        try{
-            emptyImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"floor.png"), TileSize, TileSize, false, true);
-        }
-        catch (Exception e) {
-            // Fallback to default
-            System.err.println("Custom theme image not found. Using default.");
-            emptyImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"floor.png"), TileSize, TileSize, false, true);
-        }
-        try{
-            IndestructibleWallImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"durable_wall.png"), TileSize, TileSize, false, true);
-        }
-        catch (Exception e) {
-            // Fallback to default
-            System.err.println("Custom theme image not found. Using default.");
-            IndestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"durable_wall.png"), TileSize, TileSize, false, true);
-        }
-        try{
-            DestructibleWallImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"destructible_wall.png"), TileSize, TileSize, false, true);
-        }
-        catch (Exception e) {
-            // Fallback to default
-            System.err.println("Custom theme image not found. Using default.");
-            DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"destructible_wall.png"), TileSize, TileSize, false, true);
-        }
-        try{
-            player1Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"player1.jpg"), TileSize, TileSize, false, true);
-        }
-        catch (Exception e) {
-            // Fallback to default
-            System.err.println("Custom theme image not found. Using default.");
-            player1Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player1.jpg"), TileSize, TileSize, false, true);
-        }
-        try{
-            player2Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"player2.jpg"), TileSize, TileSize, false, true);
-        }
-        catch (Exception e) {
-            // Fallback to default
-            System.err.println("Custom theme image not found. Using default.");
-            player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player2.jpg"), TileSize, TileSize, false, true);
-        }
-        try {
-            MainMenu.getStats1().incrementGamesPlayed();
-        }
-        catch (Exception e) {
-            System.err.println("No profile loaded for player 1");
-        }
-        try {
-            MainMenu.getStats2().incrementGamesPlayed();
-        }
-        catch (Exception e) {
-            System.err.println("No profile loaded for player 2");
-        }
+        loadImagesAndProfiles();
 
         Random random = new Random();
 
@@ -417,7 +455,13 @@ public class Game {
 
 
 
-
+    /**
+     * Ends the game by setting the gameOver flag and winner name.
+     * Saves player statistics if profiles are loaded.
+     * Prints the game over message and can be extended for additional end-game logic.
+     *
+     * @param winner the name of the winning player or "Draw"
+     */
     private void endGame(String winner) {
         this.gameOver = true;
         this.winner = winner;
@@ -442,6 +486,12 @@ public class Game {
         // - etc.
     }
 
+    /**
+     * Attaches key event handlers to the given Scene.
+     * Tracks pressed keys for gameplay input and listens for 'R' key to restart the game if over.
+     *
+     * @param scene the JavaFX Scene to attach key handlers to
+     */
     public void attachKeyHandlers(Scene scene) {
         scene.setOnKeyPressed(e -> {
             if (!gameOver) {
@@ -455,6 +505,10 @@ public class Game {
         scene.setOnKeyReleased(e -> activeKeys.remove(e.getCode()));
     }
 
+    /**
+     * Restarts the game by resetting all relevant game state variables, clearing bombs and explosions,
+     * resetting player positions and visibility, and preparing the game for a new round.
+     */
     private void restartGame() {
         // Reset game state
         initGameRestart();
@@ -478,6 +532,9 @@ public class Game {
         System.out.println("Game restarted! Press R to restart when game over.");
     }
 
+    /**
+     * Checks if any player is currently in an active explosion and handles player elimination accordingly.
+     */
     private void checkPlayerHits() {
         // Check if either player is hit by any active explosion
         for (TimedExplosion timedExp : timedExplosions) {
@@ -495,6 +552,12 @@ public class Game {
         }
     }
 
+    /**
+     * Handles the logic when a player is hit by an explosion.
+     * Updates player alive state, provides visual feedback, updates stats, and ends the game if needed.
+     *
+     * @param playerNumber the player number (1 or 2) that was hit
+     */
     private void handlePlayerHit(int playerNumber) {
         if (playerNumber == 1) {
             player1Alive = false;
@@ -523,6 +586,14 @@ public class Game {
         }
     }
 
+    /**
+     * Applies an item effect depending on whether it is a buff or debuff,
+     * applying it either to the character or the opposing character.
+     *
+     * @param g the Gatherable item being used
+     * @param character the character using or receiving the item effect
+     * @param otherCharacter the other character in the game
+     */
     private void useItem(Gatherable g, jeu.personnages.Character character, jeu.personnages.Character otherCharacter) {
         if (g.isBuff()){
             g.applyEffect(character);
@@ -532,6 +603,15 @@ public class Game {
         }
     }
 
+    /**
+     * Generates a list of explosion tiles caused by a bomb, considering its position and range.
+     * Updates the game matrix when destructible blocks are destroyed,
+     * increments block destruction stats for the bomb owner,
+     * and randomly spawns items on destroyed tiles.
+     *
+     * @param bomb the Bomb triggering the explosions
+     * @return a list of Explosion objects representing affected tiles
+     */
     private List<Explosion> generateExplosionsFromBomb(Bomb bomb) {
         List<Explosion> explosionList = new ArrayList<>();
         int x = bomb.getX();
@@ -607,6 +687,16 @@ public class Game {
     }
 
 
+    /**
+     * Determines if a player is within the area of an explosion based on tile positions and size.
+     * Checks the player's center and corners for collision with the explosion tile.
+     *
+     * @param player the player to check for explosion collision
+     * @param explosionRow the row index of the explosion tile
+     * @param explosionCol the column index of the explosion tile
+     * @param tileSize the size of a tile in pixels
+     * @return true if the player is in the explosion tile area, false otherwise
+     */
     private boolean isPlayerInExplosion(Player player, int explosionRow, int explosionCol, int tileSize) {
         // Get player's current tile position
         int playerRow = player.getY() / tileSize;
@@ -630,6 +720,14 @@ public class Game {
         return topLeft || topRight || bottomLeft || bottomRight;
     }
 
+    /**
+     * Smoothly updates the visual positions of the players on the game board.
+     *
+     * <p>If player 1 is alive, updates the position of {@code player1View} to the current coordinates of {@code player1}.
+     * Similarly, if player 2 is alive, updates {@code player2View} position to match {@code player2}'s coordinates.
+     *
+     * <p>This method directly sets the layout positions to reflect player movement smoothly.
+     */
     private void updatePlayerViewsSmooth() {
         if (player1Alive) {
             player1View.setLayoutX(player1.getX());
@@ -641,6 +739,15 @@ public class Game {
         }
     }
 
+    /**
+     * Adds visual representations of bombs to the game pane if they do not already exist.
+     *
+     * <p>For each bomb in the {@code bombs} collection, if the bomb's image view has not yet been added,
+     * sets its size and position according to the tile size and bomb's coordinates, adds it to the root pane,
+     * and marks the bomb as existing in the scene.
+     *
+     * @param root the Pane to which bomb image views should be added
+     */
     private void updateBombView(Pane root) {
         for (Bomb bomb : bombs) {
             if (!bomb.isExists()) {
@@ -655,12 +762,100 @@ public class Game {
         }
     }
 
+
+    /**
+     * Returns the image corresponding to a given tile value.
+     *
+     * @param val the integer representing the type of tile:
+     *            <ul>
+     *              <li>1 - Destructible wall</li>
+     *              <li>2 - Indestructible wall</li>
+     *              <li>any other value - empty tile</li>
+     *            </ul>
+     * @return the Image object for the specified tile type
+     */
     private Image getImageForValue(int val) {
         return switch (val) {
             case 1 -> DestructibleWallImage;
             case 2 -> IndestructibleWallImage;
             default -> emptyImage;
         };
+    }
+
+    /**
+     * Loads the images for the game tiles and players according to the current theme set in MainMenu.
+     *
+     * <p>This method attempts to load images for:
+     * <ul>
+     *   <li>Floor (empty tile)</li>
+     *   <li>Indestructible wall</li>
+     *   <li>Destructible wall</li>
+     *   <li>Player 1</li>
+     *   <li>Player 2</li>
+     * </ul>
+     * If any image is not found in the current theme directory, it falls back to loading from the default theme directory.
+     *
+     * <p>After loading the images, it attempts to increment the number of games played for both player profiles
+     * using {@code MainMenu.getStats1().incrementGamesPlayed()} and {@code MainMenu.getStats2().incrementGamesPlayed()}.
+     * If profiles are not loaded, it catches exceptions and prints an error message.
+     *
+     * <p>This method should be called after setting the theme and loading player profiles to ensure images and stats
+     * are properly initialized.
+     */
+    private void loadImagesAndProfiles(){
+        try{
+            emptyImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"floor.png"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Floor image not found. Using default.");
+            emptyImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"floor.png"), TileSize, TileSize, false, true);
+        }
+        try{
+            IndestructibleWallImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"durable_wall.png"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Durable Wall image not found. Using default.");
+            IndestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"durable_wall.png"), TileSize, TileSize, false, true);
+        }
+        try{
+            DestructibleWallImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"destructible_wall.png"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Destructible wall image not found. Using default.");
+            DestructibleWallImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"destructible_wall.png"), TileSize, TileSize, false, true);
+        }
+        try{
+            player1Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"player1.jpg"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Player1 image not found. Using default.");
+            player1Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player1.jpg"), TileSize, TileSize, false, true);
+        }
+        try{
+            player2Image = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"player2.jpg"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Player2 image not found. Using default.");
+            player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player2.jpg"), TileSize, TileSize, false, true);
+        }
+        try {
+            MainMenu.getStats1().incrementGamesPlayed();
+        }
+        catch (Exception e) {
+            System.err.println("No profile loaded for player 1");
+        }
+        try {
+            MainMenu.getStats2().incrementGamesPlayed();
+        }
+        catch (Exception e) {
+            System.err.println("No profile loaded for player 2");
+        }
+
     }
 
     public Pane getRoot() {
