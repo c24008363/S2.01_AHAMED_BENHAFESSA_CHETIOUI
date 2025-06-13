@@ -206,6 +206,4 @@ public abstract class Character {
     public void setBombCount(int bombCount) {
         this.bombCount = bombCount;
     }
-
-    public abstract void update(); // let subclasses define their behavior per frame
 }

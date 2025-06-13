@@ -14,7 +14,6 @@ import java.io.IOException;
 public class MainMenu extends Application {
     private Stage primaryStage;
     private Scene menuScene;
-    private Scene gameScene;
     private static String theme;
     private static int tileSize = 40;
     private static int boardSize = 17;
@@ -52,20 +51,12 @@ public class MainMenu extends Application {
         return stats1;
     }
 
-    public static  void setStats1(PlayerStats stats1new) {
-        stats1 = stats1new;
-    }
-
-    public static  PlayerStats getStats2() {
+    public static PlayerStats getStats2() {
         return stats2;
     }
 
-    public static  void setStats2(PlayerStats stats2new) {
-        stats2 = stats2new;
-    }
 
-
-    private Game main =  new Game();
+    private Game main = new Game();
 
     public static String getPlayer2() {
         return player2;
@@ -86,8 +77,8 @@ public class MainMenu extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         this.primaryStage = primaryStage;
-        primaryStage.setWidth(main.getBoardSize() * main.getTileSize() + (main.getTileSize()/2)-5);
-        primaryStage.setHeight(main.getBoardSize() * main.getTileSize() + main.getTileSize()-1);
+        primaryStage.setWidth(main.getBoardSize() * main.getTileSize() + (main.getTileSize() / 2) - 5);
+        primaryStage.setHeight(main.getBoardSize() * main.getTileSize() + main.getTileSize() - 1);
 
         // Charger le menu depuis FXML
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/UI/menu/menu.fxml"));
@@ -105,7 +96,7 @@ public class MainMenu extends Application {
     }
 
     // Lancement du jeu
-    public void launchGame(){
+    public void launchGame() {
         main = new Game(boardSize, tileSize);
         System.out.print(boardSize + "   ");
         System.out.println(tileSize);
@@ -121,23 +112,17 @@ public class MainMenu extends Application {
 
         try {
             MainMenu.getStats1().incrementGamesPlayed();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("No profile loaded for player 1");
         }
         try {
             MainMenu.getStats2().incrementGamesPlayed();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("No profile loaded for player 2");
         }
 
         menuScene.setRoot(main.getRoot());
         primaryStage.sizeToScene();
         main.attachKeyHandlers(menuScene);
-    }
-
-    public void returnToMenu(){
-        primaryStage.setScene(menuScene);
     }
 }

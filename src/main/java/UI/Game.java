@@ -19,31 +19,35 @@ import jeu.personnages.Player;
 import java.util.*;
 
 public class Game {
+
+    //Params chosen in the option window
     private static int BoardSize = 20;
     private static int TileSize = 40;
+
+    //Game board
     private int[][] gameMatrix = new int[BoardSize][BoardSize];
-
     private ImageView[][] tileView = new ImageView[BoardSize][BoardSize];
+    private Pane root = new Pane();
 
+    //Images
     private Image emptyImage;
     private Image DestructibleWallImage;
     private Image IndestructibleWallImage;
     private Image player1Image;
     private Image player2Image;
 
-    private final Set<KeyCode> activeKeys = new HashSet<>();
+    //Players
     private Player player1;
     private Player player2;
+    private int playerSpeed = 0; //The higher, the slower: defines the amount of frame a player will not move after moving.
+    private int player2Speed = 0;
     private ImageView player1View;
     private ImageView player2View;
 
-    private Gatherable tempItem;
-
-    private int playerSpeed = 0; //The higher the slower
-    private int player2Speed = 0;
-
+    //Inputs
     private boolean player1BombPressed = false;
     private boolean player2BombPressed = false;
+    private final Set<KeyCode> activeKeys = new HashSet<>();
 
     // Game state variables
     private boolean gameOver = false;
@@ -51,20 +55,17 @@ public class Game {
     private boolean player1Alive = true;
     private boolean player2Alive = true;
 
-    private PlayerStats playerStats1;
-    private PlayerStats playerStats2;
-
+    //Bombs
     private List<Bomb> bombs = new ArrayList<>();
     private List<Explosion> explosions = new ArrayList<>();
     private final List<TimedExplosion> timedExplosions = new ArrayList<>();
+
+    //Items
     private List<Gatherable> items = new ArrayList<>();
+    private Gatherable tempItem;
 
 
-    public void setBombs(List<Bomb> bombs) {
-        this.bombs = bombs;
-    }
 
-    private Pane root = new Pane();
 
     public Game() {
         initGame();
@@ -89,13 +90,13 @@ public class Game {
         return TileSize;
     }
 
-    public boolean isGameOver() {
-        return gameOver;
-    }
 
-    public String getWinner() {
-        return winner;
-    }
+
+
+    // #--- INITIALISATION DU JEU ET COMMENCEMENT DE LA PARTIE
+
+
+
 
     private void initGame() {
         // Load images
@@ -310,50 +311,7 @@ public class Game {
         timer.start();
     }
 
-    private void checkPlayerHits() {
-        // Check if either player is hit by any active explosion
-        for (TimedExplosion timedExp : timedExplosions) {
-            Explosion exp = timedExp.getExplosion();
-
-            // Check Player 1
-            if (player1Alive && isPlayerInExplosion(player1, exp.getX(), exp.getY(), TileSize)) {
-                handlePlayerHit(1);
-            }
-
-            // Check Player 2
-            if (player2Alive && isPlayerInExplosion(player2, exp.getX(), exp.getY(), TileSize)) {
-                handlePlayerHit(2);
-            }
-        }
-    }
-
-    private void handlePlayerHit(int playerNumber) {
-        if (playerNumber == 1) {
-            player1Alive = false;
-            // Visual feedback - make player semi-transparent or change color
-            player1View.setOpacity(0.3);
-            System.out.println("Player 1 has been eliminated!");
-
-            if (player2Alive) {
-                MainMenu.getStats2().incrementGamesWon();
-                endGame("Player 2");
-            } else {
-                endGame("Draw");
-            }
-        } else if (playerNumber == 2) {
-            player2Alive = false;
-            // Visual feedback - make player semi-transparent or change color
-            player2View.setOpacity(0.3);
-            System.out.println("Player 2 has been eliminated!");
-
-            if (player1Alive) {
-                MainMenu.getStats1().incrementGamesWon();
-                endGame("Player 1");
-            } else {
-                endGame("Draw");
-            }
-        }
-    }
+    // #--- INIT GAME BUT WHEN YOU RESTART TO AVOID ISSUES ---#
 
     public void initGameRestart(){
 
@@ -451,6 +409,15 @@ public class Game {
 
     }
 
+
+
+
+    //  #--- FONCTIONS ELEMENTAIRES DU JEU ---#
+
+
+
+
+
     private void endGame(String winner) {
         this.gameOver = true;
         this.winner = winner;
@@ -511,6 +478,51 @@ public class Game {
         System.out.println("Game restarted! Press R to restart when game over.");
     }
 
+    private void checkPlayerHits() {
+        // Check if either player is hit by any active explosion
+        for (TimedExplosion timedExp : timedExplosions) {
+            Explosion exp = timedExp.getExplosion();
+
+            // Check Player 1
+            if (player1Alive && isPlayerInExplosion(player1, exp.getX(), exp.getY(), TileSize)) {
+                handlePlayerHit(1);
+            }
+
+            // Check Player 2
+            if (player2Alive && isPlayerInExplosion(player2, exp.getX(), exp.getY(), TileSize)) {
+                handlePlayerHit(2);
+            }
+        }
+    }
+
+    private void handlePlayerHit(int playerNumber) {
+        if (playerNumber == 1) {
+            player1Alive = false;
+            // Visual feedback - make player semi-transparent or change color
+            player1View.setOpacity(0.3);
+            System.out.println("Player 1 has been eliminated!");
+
+            if (player2Alive) {
+                MainMenu.getStats2().incrementGamesWon();
+                endGame("Player 2");
+            } else {
+                endGame("Draw");
+            }
+        } else if (playerNumber == 2) {
+            player2Alive = false;
+            // Visual feedback - make player semi-transparent or change color
+            player2View.setOpacity(0.3);
+            System.out.println("Player 2 has been eliminated!");
+
+            if (player1Alive) {
+                MainMenu.getStats1().incrementGamesWon();
+                endGame("Player 1");
+            } else {
+                endGame("Draw");
+            }
+        }
+    }
+
     private void useItem(Gatherable g, jeu.personnages.Character character, jeu.personnages.Character otherCharacter) {
         if (g.isBuff()){
             g.applyEffect(character);
@@ -526,7 +538,7 @@ public class Game {
         int y = bomb.getY();
         int range = bomb.getCharacter().getRange();
 
-        explosionList.add(new Explosion(x, y, 0));
+        explosionList.add(new Explosion(x, y));
 
         int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
@@ -538,7 +550,7 @@ public class Game {
                 if (nx < 0 || ny < 0 || nx >= BoardSize || ny >= BoardSize) break;
                 if (gameMatrix[nx][ny] == 2) break;
 
-                explosionList.add(new Explosion(nx, ny, dir + 1));
+                explosionList.add(new Explosion(nx, ny));
 
                 if (gameMatrix[nx][ny] == 1) {
                     gameMatrix[nx][ny] = 0;
