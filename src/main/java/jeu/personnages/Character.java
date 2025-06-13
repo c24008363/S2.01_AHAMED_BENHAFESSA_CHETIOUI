@@ -11,7 +11,7 @@ import java.util.function.BiPredicate;
 
 /**
  * Abstract base class representing a character in the Bomberman-style game.
- * Manages position, movement, image, bomb placement, and interactions with gatherable items.
+ * Manages position, movement, bomb placement, and interactions with gatherable items.
  */
 public abstract class Character {
     protected int row;
@@ -20,7 +20,6 @@ public abstract class Character {
     private int y;
     protected int[][] gameMatrix;
     protected int id;
-    private ObjectProperty<Image> imageProperty = new SimpleObjectProperty<>();
     private int bombCount = 1;
     private boolean isInBomb = false;
     private int range = 1;
@@ -32,15 +31,13 @@ public abstract class Character {
      * @param startCol   starting column in the matrix
      * @param gameMatrix reference to the game grid matrix
      * @param id         character ID
-     * @param image      image representing the character
      * @param tileSize   size of a tile in pixels
      */
-    public Character(int startRow, int startCol, int[][] gameMatrix, int id, Image image, int tileSize) {
+    public Character(int startRow, int startCol, int[][] gameMatrix, int id, int tileSize) {
         this.row = startRow;
         this.col = startCol;
         this.gameMatrix = gameMatrix;
         this.id = id;
-        this.imageProperty.set(image);
         this.x = startRow*tileSize;
         this.y = startCol*tileSize;
     }
@@ -60,10 +57,6 @@ public abstract class Character {
     // Bomb status
     public boolean isInBomb() { return isInBomb; }
     public void setInBomb(boolean inBomb) { isInBomb = inBomb; }
-
-    // Image access
-    public Image getImage() { return imageProperty.get(); }
-    public void setImage(Image image) { this.imageProperty.set(image); }
 
 
     /**

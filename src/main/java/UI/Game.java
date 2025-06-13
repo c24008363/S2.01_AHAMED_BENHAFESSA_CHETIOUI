@@ -257,8 +257,8 @@ public class Game {
         }
 
         // Setup players
-        player1 = new Player(1, 1, gameMatrix, 1, player1Image, TileSize);
-        player2 = new Player(BoardSize - 2, BoardSize - 2, gameMatrix, 2, player2Image, TileSize);
+        player1 = new Player(1, 1, gameMatrix, 1, TileSize);
+        player2 = new Player(BoardSize - 2, BoardSize - 2, gameMatrix, 2, TileSize);
 
         player1View = new ImageView(player1Image);
         player2View = new ImageView(player2Image);
@@ -437,8 +437,8 @@ public class Game {
             }
         }
         // Setup players
-        player1 = new Player(1, 1, gameMatrix, 1, player1Image, TileSize);
-        player2 = new Player(BoardSize - 2, BoardSize - 2, gameMatrix, 2, player2Image, TileSize);
+        player1 = new Player(1, 1, gameMatrix, 1, TileSize);
+        player2 = new Player(BoardSize - 2, BoardSize - 2, gameMatrix, 2, TileSize);
 
         player1View = new ImageView(player1Image);
         player2View = new ImageView(player2Image);
@@ -527,8 +527,8 @@ public class Game {
         timedExplosions.clear();
 
         // Reset player positions and states
-        player1 = new Player(1, 1, gameMatrix, 1, player1Image, TileSize);
-        player2 = new Player(BoardSize - 2, BoardSize - 2, gameMatrix, 2, player2Image, TileSize);
+        player1 = new Player(1, 1, gameMatrix, 1, TileSize);
+        player2 = new Player(BoardSize - 2, BoardSize - 2, gameMatrix, 2, TileSize);
 
         // Reset visual elements
         player1View.setOpacity(1.0);

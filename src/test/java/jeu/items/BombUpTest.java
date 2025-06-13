@@ -1,6 +1,5 @@
 package jeu.items;
 
-import javafx.scene.image.Image;
 import jeu.personnages.Character;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +11,7 @@ class BombUpTest {
         private int bombCount = 0;
 
         public TestCharacter() {
-            super(0, 0, new int[1][1], 1, new Image(""), 32);
+            super(0, 0, new int[1][1], 1, 32);
         }
 
         @Override
@@ -29,10 +28,11 @@ class BombUpTest {
     @Test
     void applyEffect() {
         TestCharacter character = new TestCharacter();
+        character.setBombCount(2);
 
         BombUp bombUp = new BombUp(0, 0, 32);
         bombUp.applyEffect(character);
 
-        assertEquals(2, character.getBombCount());
+        assertEquals(3, character.getBombCount());
     }
 }
