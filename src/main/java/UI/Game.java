@@ -66,6 +66,11 @@ public class Game {
     /** Image for indestructible walls. */
     private Image IndestructibleWallImage;
 
+    /** Image for bombs */
+    private Image bombImage;
+    /** Image for flames */
+    private Image flameImage;
+
     /** Player 1 sprite image. */
     private Image player1Image;
 
@@ -282,7 +287,7 @@ public class Game {
                     if (activeKeys.contains(KeyCode.D)) player1.moveRight(TileSize);
                     if (activeKeys.contains(KeyCode.E)) {
                         if (!player1BombPressed && player1.getBombCount() > 0) {
-                            bombs.add(player1.placeBomb(TileSize));
+                            bombs.add(player1.placeBomb(TileSize, bombImage));
                             gameMatrix[player1.getRow()][player1.getCol()] = 3;
                             player1.setInBomb(true);
                             player1BombPressed = true;
@@ -303,7 +308,7 @@ public class Game {
                     if (activeKeys.contains(KeyCode.L)) player2.moveRight(TileSize);
                     if (activeKeys.contains(KeyCode.O)) {
                         if (!player2BombPressed && player2.getBombCount() > 0) {
-                            bombs.add(player2.placeBomb(TileSize));
+                            bombs.add(player2.placeBomb(TileSize, bombImage));
                             gameMatrix[player2.getRow()][player2.getCol()] = 3;
                             player2BombPressed = true;
                             player2.setInBomb(true);
@@ -360,7 +365,7 @@ public class Game {
                         List<Explosion> newExplosions = generateExplosionsFromBomb(bomb);
 
                         for (Explosion exp : newExplosions) {
-                            ImageView explosionView = new ImageView(new Image(getClass().getResourceAsStream("/UI/flame.png"), TileSize, TileSize, false, true));
+                            ImageView explosionView = new ImageView(flameImage);
                             explosionView.setLayoutX(exp.getY() * TileSize);
                             explosionView.setLayoutY(exp.getX() * TileSize);
                             explosionView.setFitWidth(TileSize);
@@ -842,6 +847,20 @@ public class Game {
             // Fallback to default
             System.err.println("Player2 image not found. Using default.");
             player2Image = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"player2.jpg"), TileSize, TileSize, false, true);
+        }
+        try {
+            bombImage = new Image(BombUp.class.getResourceAsStream(MainMenu.getTheme() + "bomb.png"), TileSize, TileSize, false, true);
+        } catch (Exception e) {
+            System.err.println("Bomb image not found. Using default.");
+            bombImage = new Image(BombUp.class.getResourceAsStream("/UI/themes/default/" + "bomb.png"), TileSize, TileSize, false, true);
+        }
+        try{
+            flameImage = new Image(getClass().getResourceAsStream(MainMenu.getTheme()+"flame.png"), TileSize, TileSize, false, true);
+        }
+        catch (Exception e) {
+            // Fallback to default
+            System.err.println("Flame image not found. Using default.");
+            flameImage = new Image(getClass().getResourceAsStream("/UI/themes/default/"+"flame.png"), TileSize, TileSize, false, true);
         }
         try {
             MainMenu.getStats1().incrementGamesPlayed();

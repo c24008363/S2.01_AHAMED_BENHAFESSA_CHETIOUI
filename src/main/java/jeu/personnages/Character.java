@@ -189,9 +189,9 @@ public abstract class Character {
      * @param TileSize the size of one tile (not used here)
      * @return a new {@link Bomb} object
      */
-    public Bomb placeBomb(int TileSize){
+    public Bomb placeBomb(int TileSize, Image image){
         bombCount = bombCount -1;
-        return new Bomb(this.row, this.col, "bomb.png", this, 1);
+        return new Bomb(this.row, this.col, image, this, 1);
 
     }
 

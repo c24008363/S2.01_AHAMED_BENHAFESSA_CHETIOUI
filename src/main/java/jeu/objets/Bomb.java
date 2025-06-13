@@ -26,23 +26,18 @@ public class Bomb {
 
     /**
      * Constructs a Bomb object.
+     * Il était prévu de changer l'image de la bombe en fonction des états du joueur mais manque de temps ca ne se fera pas, l'image sera rechargé a chaque fois.
      *
      * @param x         the X (column) coordinate in the game grid
      * @param y         the Y (row) coordinate in the game grid
-     * @param path      image path relative to the theme folder
+     * @param image      loaded image of the bomb
      * @param character the character who placed the bomb
      * @param range     explosion range (currently unused but reserved for future logic)
      */
-    public Bomb(int x, int y, String path, Character character, int range) {
+    public Bomb(int x, int y, Image image, Character character, int range) {
         this.x = x;
         this.y = y;
-        try {
-            image = new Image(BombUp.class.getResourceAsStream(MainMenu.getTheme() + path));
-        } catch (Exception e) {
-            System.err.println("Bomb image not found. Using default.");
-            image = new Image(BombUp.class.getResourceAsStream("/UI/themes/default/" + path));
-        }
-
+        this.image = image;
         this.imageView = new ImageView(image);
         this.character = character;
         this.placedAt = Instant.now();
