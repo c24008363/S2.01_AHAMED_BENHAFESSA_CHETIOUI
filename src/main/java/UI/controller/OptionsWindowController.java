@@ -84,6 +84,18 @@ public class OptionsWindowController {
      * Populates the theme selection ComboBox with directory names found
      * in the <code>/UI/themes</code> resource folder.
      * Sets the default theme and listens for changes to update the theme in {@link MainMenu}.
+     *
+     * The themes must respect certain conditions to work as intended:
+     * The folder must not be empty in order to be displayed
+     * <p>
+     * The files must also be named the right way:
+     * Player1: player1.jpg
+     * Player2: player2.jpg
+     * Bomb: bomb.png
+     * Explosions: flame.png
+     * Floor / EmptySpaces: floor.png
+     * Destructible Walls: destructible_wall.png
+     * Durable walls: durable_wall.png
      */
     private void populateThemeComboBox() {
         try {

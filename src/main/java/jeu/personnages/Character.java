@@ -67,7 +67,7 @@ public abstract class Character {
     public void moveUp(int tileSize) {
         if (canMoveToRework(y-2, x, tileSize )) {
             setY(getY() - 1);
-            row = (getY()+(tileSize-5)/2)/tileSize;
+            row = (getY()+(tileSize-5)/2)/tileSize; //comme la taille du joueur est modulable, tout ces calculs se font en fonction de tileSize.
             updateIsInBomb(tileSize);
         }
     }
